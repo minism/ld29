@@ -4,10 +4,17 @@ require 'os'
 require 'lib.strict'
 require 'leaf'
 
+-- Import leaf locally
+for k, v in pairs(leaf) do
+  _G[k] = v
+end
+
+
 local Game = require 'game'
 
 -- Setup global objects
 console = leaf.Console()
+lg = love.graphics
 
 
 function love.load()

@@ -1,7 +1,12 @@
-local Game = leaf.Context:extend()
+local constants = require 'constants'
+local Input = require 'input'
+
+local Game = Context:extend()
 
 
 function Game:init()
+  self.input = Input()
+
   -- Setup physics world
   local pscale = 32
   love.physics.setMeter(pscale)
@@ -16,13 +21,20 @@ function Game:init()
   self.player.fixture = love.physics.newFixture(self.player.body, self.player.shape)
   self.player.fixture:setRestitution(0.9)
   self.player.body:setGravityScale(0)
+  self.player.body:setLinearDamping(constants.PLAYER_DAMPING)
 
   console:write('Game initialized')
 end
 
 
 function Game:update(dt)
+  -- Update systems
   self.world:update(dt)
+  self.input:update(dt)
+
+  -- Handle input
+  local fx, fy = self.input:getForce()
+  self.player.body:applyForce(vector.scale(fx, fy, constants.PLAYER_FORCE))
 end
 
 
@@ -32,6 +44,14 @@ function Game:draw()
 
   -- Draw UI
   console:drawLog()
+end
+
+
+function Game:keypressed(key, unicode)
+  if key == 'escape' then
+    love.event.quit()
+  end
+
 end
 
 

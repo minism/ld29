@@ -1,0 +1,5 @@
+return {
+  INPUT_LIMIT = 150,
+  PLAYER_FORCE = 30,
+  PLAYER_DAMPING = 8,
+}

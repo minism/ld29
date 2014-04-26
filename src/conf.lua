@@ -1,10 +1,10 @@
 function love.conf(t)
     -- Love settings
     t.title = "ld29"
-    t.version = "0.9.1"
+    -- t.version = "0.0.0"
     t.author = "joshbothun@gmail.com"
     t.identity = nil
-    t.console = true
+    t.console = false
     t.screen.width = 1024
     t.screen.height = 768
     t.screen.fullscreen = false
