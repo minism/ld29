@@ -3,6 +3,7 @@ local tween = require 'lib.tween'
 local assets = require 'assets'
 local const = require 'constants'
 local enemy = require 'entities.enemy'
+local Explosion = require 'entities.explosion'
 local Input = require 'input'
 local Spawner = require 'spawner'
 local Sprite = require 'sprite'
@@ -58,7 +59,7 @@ function Game:init()
   }
 
   -- Start music
-  love.audio.play(assets.music.musdemo)
+  -- love.audio.play(assets.music.musdemo)
   -- self.sound_heli = assets.sound.heli_raw:play()
   -- self.sound_heli:setVolume(0.1)
   -- self.sound_heli:setLooping(true)
@@ -204,14 +205,19 @@ function Game:handleCollisions()
     -- Enemy checks
     if entity.enemy then
       if self.player:intersects(entity) then
-        return self:playerDeath() -- Short circuit
+        return self:playerDeath()  -- Short circuit
       end
 
       for i, bullet in ipairs(self.ldata.bullets) do
         local a,b,c,d = entity:getRect()
         if rect.contains(a,b,c,d, bullet.x, bullet.y) then
-          if entity:hit() and entity.heli then
-            self.ldata.heli_count = self.ldata.heli_count - 1
+
+          -- Entity was killed
+          if entity:hit() then
+            table.insert(self.entities, Explosion(entity:getCenter()))
+            if entity.heli then
+              self.ldata.heli_count = self.ldata.heli_count - 1
+            end
           end
           bullet.dead = true
         end

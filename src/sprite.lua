@@ -24,6 +24,12 @@ function Sprite:update(dt)
 end
 
 
+function Sprite:draw(...)
+  local quad = self:getQuad()
+  lg.draw(self.image, quad, ...)
+end
+
+
 function Sprite:getQuad()
   return self.quads[self.frame]
 end

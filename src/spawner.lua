@@ -18,7 +18,7 @@ function Spawner:init()
   self.timers = {
     fish = {Timer(1, 3), self.createFish},
     jet = {Timer(3, 8), self.createJet},
-    heli = {Timer(1), self.createHeli},
+    -- heli = {Timer(1), self.createHeli},
   }
 
   -- Start with timers at max
@@ -55,16 +55,17 @@ end
 
 function Spawner:createFish()
   local x = screen.width - Fish.w
-  local y = util.randrange(screen.height / 2, screen.height - 100)
+  local y = util.randrange(screen.height / 2 + 50, screen.height - 80)
   local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE)
-  return Fish(x, y, speed)
+  local spread = math.random(10, 20)
+  return Fish(x, y, speed, spread)
 end
 
 function Spawner:createJet()
   local x = screen.width - enemy.Jet.w
   local y = util.randrange(60, screen.height / 2 - 50)
   local speed = util.randvariance(const.JET_SPEED_BASE, const.JET_SPEED_VARIANCE)
-  -- return enemy.Jet(x, y, speed)
+  return enemy.Jet(x, y, speed)
 end
 
 function Spawner:createHeli()

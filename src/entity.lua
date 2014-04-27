@@ -28,6 +28,12 @@ function Entity:getNose()
 end
 
 
+function Entity:getCenter()
+  local x, y = self:getPosition()
+  return x + self.w / 2, y + self.h / 2
+end
+
+
 -- Get the left,top,right,bottom AABB for this entity
 function Entity:getRect()
   local x, y = self:getPosition()

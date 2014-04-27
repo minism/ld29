@@ -8,11 +8,11 @@ local Fish = Entity:extend {
 }
 
 
-function Fish:init(x, y, speed)
+function Fish:init(x, y, speed, spread)
   Entity.init(self, x, y)
   self.speed = speed
+  self.spread = spread
   self.center = y
-  self.spread = math.random(10, 20)
   self.ts = 0
 
   -- TODO better way than this flag? like a "collide behavior" field
