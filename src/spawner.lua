@@ -1,7 +1,7 @@
 local const = require 'constants'
 local Timer = require 'timer'
 local util = require 'util'
-local Enemy = require 'entities.enemy'
+local enemy = require 'entities.enemy'
 local Fish = require 'entities.fish'
 
 local Spawner = Object:extend()
@@ -17,7 +17,7 @@ function Spawner:init()
 
   self.timers = {
     fish = Timer(1),
-    enemy = Timer(3, 8),
+    jet = Timer(3, 8),
   }
 
   -- Start with timers at max
@@ -34,8 +34,8 @@ function Spawner:update(dt)
   if self.timers.fish:check() then
     table.insert(self.queue, self:createFish())
   end
-  if self.timers.enemy:check() then
-    table.insert(self.queue, self:createEnemy())
+  if self.timers.jet:check() then
+    table.insert(self.queue, self:createJet())
   end
 end
 
@@ -54,15 +54,15 @@ end
 function Spawner:createFish()
   local x = screen.width - Fish.w
   local y = util.randrange(screen.height / 2, screen.height - 100) -- TODO water pos and constants for this
-  local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE) / 2
+  local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE)
   return Fish(x, y, speed)
 end
 
-function Spawner:createEnemy()
+function Spawner:createJet()
   local x = screen.width - Fish.w
   local y = util.randrange(100, screen.height / 2 - 100) -- TODO water pos and constants for this
-  local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE)
-  return Enemy(x, y, speed)
+  local speed = util.randvariance(const.JET_SPEED_BASE, const.JET_SPEED_VARIANCE)
+  return enemy.Jet(x, y, speed)
 end
 
 return Spawner

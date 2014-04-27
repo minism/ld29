@@ -3,6 +3,7 @@ local const = require 'constants'
 local Entity = require 'entity'
 local Timer = require 'timer'
 
+
 local Enemy = Entity:extend {
   w = 32,
   h = 24,
@@ -28,11 +29,11 @@ end
 
 function Enemy:draw()
   local x, y = self:getPosition()
-  lg.draw(assets.img.heli2, self.x, self.y)
+  lg.draw(assets.img.jet, self.x, self.y)
   if self.hit_timer:active() then
     lg.setBlendMode('additive')
-    lg.draw(assets.img.heli2, self.x, self.y)
-    lg.draw(assets.img.heli2, self.x, self.y)
+    lg.draw(assets.img.jet, self.x, self.y)
+    lg.draw(assets.img.jet, self.x, self.y)
   end
   lg.setBlendMode('alpha')
 end
@@ -57,4 +58,9 @@ function Enemy:die()
 end
 
 
-return Enemy
+local Jet = Enemy:extend()
+
+
+return {
+  Jet = Jet
+}
