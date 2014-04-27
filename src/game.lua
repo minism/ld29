@@ -56,7 +56,7 @@ end
 -- Start or restart game
 function Game:start()
   self.player:reposition(10, 10)
-  self.ldata.bullets = {}
+  self.ldata.bullets = {} 
   self.ldata.fish = 0
   self.entities = {}
   self.spawner = Spawner()
@@ -67,7 +67,8 @@ end
 -- State/Data functions
 
 function Game:fire()
-  local bullet = vector(self.player:getNose())
+  local x, y = self.player:getNose()
+  local bullet = vector(x + 1, y + 2)
   bullet.speed = const.BULLET_SPEED
   table.insert(self.ldata.bullets, bullet)
 end
@@ -182,7 +183,7 @@ function Game:draw()
   screen.apply()
 
   -- Draw bg
-  lg.setColor(0, 10, 20)
+  lg.setColor(0, 0, 200)
   lg.rectangle('fill', 0, 0, screen.width, screen.height)
   lg.setColor(0, 50, 100)
   lg.rectangle('fill', 0, self.ldata.water_y, screen.width, screen.height)
@@ -194,11 +195,12 @@ function Game:draw()
     entity:draw()
   end
 
+  -- self:drawDebug()
   screen.revert()
 
   -- Draw UI
   console:drawLog()
-  self:drawDebug()
+  self:drawDebugUi()
 
 end
 
@@ -207,25 +209,34 @@ end
 function Game:drawLocalData(dt)
   lg.setColor(255, 255, 255)
   for i, bullet in ipairs(self.ldata.bullets) do
-    lg.point(bullet.x, bullet.y)
+    lg.setColor(255, 255, 0)
+    lg.rectangle('fill', bullet.x, bullet.y, 1, 1)
   end
 end
 
 
--- Draw debugging data
+-- Draw debugging data in screen transformation
 function Game:drawDebug()
+  -- Draw BBs
+  local a,b,c,d = self.player.bucket:getRect()
+  lg.setColor(255, 0, 0)
+  lg.rectangle('line', a, b, c - a, d - b)
+  local a,b,c,d = self.player:getRect()
+  lg.setColor(255, 0, 0)
+  lg.rectangle('line', a, b, c - a, d - b)
+  for i, entity in ipairs(self.entities) do
+    local a,b,c,d = entity:getRect()
+    lg.rectangle('line', a, b, c - a, d - b)
+  end
+end
+
+
+
+-- Draw debugging data
+function Game:drawDebugUi()
   local sx, sy = lg.getWidth(), lg.getHeight()
   local r = rect(sx - 200, 10, sx, 100)
   lg.print("Fish collected:  " .. self.ldata.fish, r.left, r.top)
-
-  -- Draw BBs
-  -- local a,b,c,d = self.player.bucket:getRect()
-  -- lg.setColor(255, 0, 0)
-  -- lg.rectangle('fill', a, b, c - a, d - b)
-  -- for i, entity in ipairs(self.entities) do
-  --   local a,b,c,d = entity:getRect()
-  --   lg.rectangle('fill', a, b, c - a, d - b)
-  -- end
 end
 
 

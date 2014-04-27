@@ -12,14 +12,14 @@ end
 
 
 function Player:init(world)
-  PhysEntity.init(self, world, 0, 0, 40, 25)
+  PhysEntity.init(self, world, 0, 0, 32, 24)
   self.body:setGravityScale(0)
   self.body:setLinearDamping(const.PLAYER_DAMPING)
   self.body:setMass(const.PLAYER_MASS)
 
   -- Setup fish bucket
   local bx, by = getBucketPosition(self)
-  self.bucket = PhysEntity(world, bx, by, 30)
+  self.bucket = PhysEntity(world, bx, by, 32)
   self.bucket.body:setMass(const.PLAYER_BUCKET_MASS)
   self.bucket.body:setLinearDamping(const.PLAYER_BUCKET_DAMPING)
 
@@ -60,10 +60,10 @@ function Player:draw()
 
   -- Draw bucket
   local bx, by = self.bucket:getPosition()
-  lg.rectangle('fill', bx, by, self.bucket.w, self.bucket.h)
+  lg.draw(assets.img.bucket, bx, by)
 
   -- Draw rope
-  lg.setLineWidth(2)
+  lg.setLineWidth(1)
   bx = bx + self.bucket.w / 2
   px = px + self.w / 2
   py = py + self.h

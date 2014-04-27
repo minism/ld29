@@ -1,10 +1,11 @@
+local assets = require 'assets'
 local const = require 'constants'
 local Entity = require 'entity'
 local Timer = require 'timer'
 
 local Enemy = Entity:extend {
-  w = 30,
-  h = 20,
+  w = 32,
+  h = 24,
 }
 
 
@@ -28,11 +29,11 @@ end
 function Enemy:draw()
   local x, y = self:getPosition()
   if self.hit_timer:active() then
-    lg.setColor(255, 255, 255)
+    lg.setColor(255, 100, 100)
   else
-    lg.setColor(255, 255, 0)
+    lg.setColor(255, 255, 255)
   end
-  lg.rectangle('fill', self.x, self.y, self.w, self.h)
+  lg.draw(assets.img.heli2, self.x, self.y) 
 end
 
 
