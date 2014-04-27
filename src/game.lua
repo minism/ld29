@@ -61,9 +61,9 @@ function Game:init()
 
   -- Start music
   -- love.audio.play(assets.music.musdemo)
-  -- self.sound_heli = assets.sound.heli_raw:play()
-  -- self.sound_heli:setVolume(0.1)
-  -- self.sound_heli:setLooping(true)
+  self.sound_heli = assets.sound.heli_raw:play()
+  self.sound_heli:setVolume(0.1)
+  self.sound_heli:setLooping(true)
 
   -- Start game
   console:write('Game initialized')
