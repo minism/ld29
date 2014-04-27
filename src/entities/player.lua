@@ -1,3 +1,4 @@
+local assets = require 'assets'
 local const = require 'constants'
 local PhysEntity = require 'phys_entity'
 
@@ -45,8 +46,7 @@ function Player:update(dt)
 
   -- Constrain player
   local x, y = self:getPosition()
-  local sx, sy = lg.getWidth(), lg.getHeight()
-  if x < 0 then x = 0 elseif x + self.w > sx then  x = sx - self.w end
+  if x < 0 then x = 0 elseif x + self.w > screen.width then x = screen.width - self.w end
   if y < 0 then y = 0 end
   self.body:setPosition(x, y)
 end
@@ -55,12 +55,11 @@ end
 function Player:draw()
   -- Draw player
   local px, py = self:getPosition()
-  lg.setColor(200, 100, 0)
-  lg.rectangle('fill', px, py, self.w, self.h)
+  lg.setColor(255, 255, 255)
+  lg.draw(assets.img.heli1, px, py)
 
   -- Draw bucket
   local bx, by = self.bucket:getPosition()
-  lg.setColor(255, 255, 2550)
   lg.rectangle('fill', bx, by, self.bucket.w, self.bucket.h)
 
   -- Draw rope

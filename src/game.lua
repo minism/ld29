@@ -25,6 +25,9 @@ function Game:init()
     firing = Timer(const.FIRING_SPEED),
   }
 
+  -- Setup screen 
+  screen.setSize(const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
+
   -- Setup box2d physics world
   love.physics.setMeter(const.METER_SCALE)
   self.world = love.physics.newWorld(0, const.GRAVITY*const.METER_SCALE, true)
@@ -39,7 +42,7 @@ function Game:init()
   -- "Local data", simple data owned by game not encapsulated in entities.  This is basically
   -- for simplicity, as using Entity objects may be overengineering for things like water position.
   self.ldata = {
-    water_y = lg.getHeight () / 2,
+    water_y = screen.height / 2,
     bullets = {},
     fish = 0,
   }
@@ -52,7 +55,7 @@ end
 
 -- Start or restart game
 function Game:start()
-  self.player:reposition(100, 100)
+  self.player:reposition(10, 10)
   self.ldata.bullets = {}
   self.ldata.fish = 0
   self.entities = {}
@@ -119,6 +122,9 @@ end
 function Game:updateLocalData(dt)
   for i, bullet in ipairs(self.ldata.bullets) do
     bullet.x, bullet.y = vector.translate(bullet, bullet.speed * dt, 0)
+    if not rect.contains(0, 0, screen.width, screen.height, bullet.x, bullet.y) then
+      bullet.dead = true
+    end
   end
 end
 
@@ -173,12 +179,13 @@ end
 -- Rendering
 
 function Game:draw()
+  screen.apply()
+
   -- Draw bg
-  local sx, sy = lg.getWidth(), lg.getHeight()
-  lg.setColor(0, 0, 0)
-  lg.rectangle('fill', 0, 0, sx, sy)
+  lg.setColor(0, 10, 20)
+  lg.rectangle('fill', 0, 0, screen.width, screen.height)
   lg.setColor(0, 50, 100)
-  lg.rectangle('fill', 0, self.ldata.water_y, sx, sy)
+  lg.rectangle('fill', 0, self.ldata.water_y, screen.width, screen.height)
 
   -- Draw objects
   self.player:draw()
@@ -187,9 +194,12 @@ function Game:draw()
     entity:draw()
   end
 
+  screen.revert()
+
   -- Draw UI
   console:drawLog()
   self:drawDebug()
+
 end
 
 

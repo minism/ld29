@@ -9,7 +9,7 @@ for k, v in pairs(leaf) do
   _G[k] = v
 end
 
-
+local assets = require 'assets'
 local Game = require 'game'
 
 -- Setup global objects
@@ -27,6 +27,7 @@ function love.load()
 
   -- Load assets
   console:write 'Loading assets'
+  assets.load()
 
   -- Start game
   local game = Game()

@@ -6,8 +6,6 @@ local Fish = require 'entities.fish'
 
 local Spawner = Object:extend()
 
-local sx, sy = love.graphics.getWidth(), love.graphics.getHeight()
-
 
 -- Entity spawner controls construction and spawning of entities based on game time
 -- Game difficulty curve logic should be entirely contained within this class
@@ -54,15 +52,15 @@ end
 -- Factories
 
 function Spawner:createFish()
-  local x = sx - Fish.w
-  local y = util.randrange(sy / 2, sy - 100) -- TODO water pos and constants for this
+  local x = screen.width - Fish.w
+  local y = util.randrange(screen.height / 2, screen.height - 100) -- TODO water pos and constants for this
   local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE) / 2
   return Fish(x, y, speed)
 end
 
 function Spawner:createEnemy()
-  local x = sx - Fish.w
-  local y = util.randrange(100, sy / 2 - 100) -- TODO water pos and constants for this
+  local x = screen.width - Fish.w
+  local y = util.randrange(100, screen.height / 2 - 100) -- TODO water pos and constants for this
   local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE)
   return Enemy(x, y, speed)
 end

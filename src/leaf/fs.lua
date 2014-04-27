@@ -34,10 +34,10 @@ local fs = {}
 local function recursiveYieldingLoader(root, file_callback, interp_callback)
     local map = {}
     local count, total = 0, 0
-    function iter(path, docount)
-        for i, name in ipairs(love.filesystem.enumerate(path)) do
+    local function iter(path, docount)
+        for i, name in ipairs(love.filesystem.getDirectoryItems(path)) do
             count = count + 1
-            fullpath = path .. '/' .. name
+            local fullpath = path .. '/' .. name
             if not docount and love.filesystem.isFile(fullpath) then
                 -- Strip root dir and extension from key
                 local key = string.sub(fullpath, fullpath:find('/') + 1, fullpath:len())

@@ -26,7 +26,7 @@
 --]]
 
 
-local w, h, f, v, a = love and love.graphics and love.graphics.getMode and love.graphics.getMode()
+local w, h, flags = love and love.graphics and love.window and love.window.getMode()
 local screen = {
     -- Represents the dimensions of the game screen (as opposed to resolution)
     width = w,
@@ -85,7 +85,7 @@ end
 
 -- Apply screen transformations, this should wrap all your drawing code
 function screen.apply()
-    local res_w, res_h = love.graphics.getMode()
+    local res_w, res_h = love.window.getDimensions()
     local scale = math.min(math.floor(res_w / screen.width), math.floor(res_h / screen.height))
     love.graphics.push()
     love.graphics.translate((res_w % (screen.width * scale)) / 2, (res_h % (screen.height * scale)) / 2)
