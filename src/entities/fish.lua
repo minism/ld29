@@ -11,7 +11,6 @@ local Fish = Entity:extend {
 function Fish:init(x, y, speed)
   Entity.init(self, x, y)
   self.speed = speed
-  self.mass = 10
 
   -- TODO better way than this flag? like a "collide behavior" field
   self.fish = true

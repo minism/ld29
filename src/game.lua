@@ -54,7 +54,7 @@ function Game:init()
   }
 
   -- Start music
-  love.audio.play(assets.music.musdemo)
+  -- love.audio.play(assets.music.musdemo)
 
   -- Start game
   console:write('Game initialized')
@@ -87,7 +87,8 @@ end
 
 function Game:collectFish(fish)
   self.ldata.fish = self.ldata.fish + 1
-  self.player:addBucketWeight(fish.mass)
+  local mass = math.random(7, 13)
+  self.player:addBucketWeight(mass)
 
   assets.sound.fish:play()
 end
@@ -222,8 +223,10 @@ function Game:draw()
   screen.revert()
 
   -- Draw UI
-  console:drawLog()
-  self:drawDebugUi()
+  if self.debug then
+    console:drawLog()
+  end
+  self:drawInterface()
 
 end
 
@@ -282,13 +285,13 @@ function Game:drawDebug()
 end
 
 
-
 -- Draw debugging data
-function Game:drawDebugUi()
+function Game:drawInterface()
+  lg.setColor(255, 255, 0)
+  lg.setFont(assets.font_large)
   local sx, sy = lg.getWidth(), lg.getHeight()
-  local r = rect(sx - 200, 10, sx, 100)
-  lg.print("Fish collected:  " .. self.ldata.fish, r.left, r.top)
-  lg.print("Bucket weight:  " .. self.player.bucket_weight, r.left, r.top + 20)
+  local r = rect(sx - 500, 10, sx, 100)
+  lg.print("Load: " .. self.player.bucket_weight .. " pounds", r.left, r.top)
 end
 
 
