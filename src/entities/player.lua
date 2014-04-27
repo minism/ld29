@@ -22,7 +22,7 @@ function Player:init(world)
   self.bucket = PhysEntity(world, bx, by, 32, 32, 0.2)
   self.bucket.body:setMass(const.PLAYER_BUCKET_MASS)
   self.bucket.body:setLinearDamping(const.PLAYER_BUCKET_DAMPING)
-  self.bucket_weight = const.PLAYER_BUCKET_MASS
+  self.bucket_weight = 0
 
   -- Setup joints
   local px, py = self:getPosition()
@@ -60,6 +60,7 @@ function Player:reposition(x, y)
   self.bucket.body:setLinearVelocity(0, 0)
   self.body:setPosition(x, y)
   self.bucket.body:setPosition(getBucketPosition(self))
+  self.bucket_weight = 0
 end
 
 

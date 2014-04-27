@@ -9,6 +9,7 @@ local Spawner = require 'spawner'
 local Sprite = require 'sprite'
 local Timer = require 'timer'
 local Player = require 'entities.player'
+local util = require 'util'
 
 local Game = Context:extend()
 
@@ -30,8 +31,10 @@ function Game:init()
   -- Setup game timers
   self.timers = {
     firing = Timer(const.FIRING_SPEED),
+    restart = Timer(1),
   }
   self.ts = 0
+  self.player_death = false
 
   -- Setup screen 
   screen.setSize(const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
@@ -59,14 +62,6 @@ function Game:init()
     sky_color = {135, 206, 255},
   }
 
-  -- Start music
-  self.music = assets.music.mus1:play()
-  self.music:setLooping(true)
-  self.music:setVolume(0.8)
-  -- self.sound_heli = assets.sound.heli_raw:play()
-  -- self.sound_heli:setVolume(0.1)
-  -- self.sound_heli:setLooping(true)
-
   -- Start game
   console:write('Game initialized')
   self:start()
@@ -75,6 +70,9 @@ end
 
 -- Start or restart game
 function Game:start()
+  self.music = assets.music.mus1:play()
+  self.music:setLooping(true)
+  self.music:setVolume(0.8)
   self.player:reposition(10, 10)
   self.ldata.bullets = {} 
   self.ldata.fish = 0
@@ -82,6 +80,7 @@ function Game:start()
   self.entities = {}
   self.spawner = Spawner(self.world)
   self.ts = 0
+  self.player_death = false
 end
 
 
@@ -108,9 +107,16 @@ end
 
 
 function Game:playerDeath()
+  self.player_death = true
   assets.sound.die:play()
-
-  self:start()
+  self.timers.restart:reset()
+  self.music:stop()
+  local a, b, c, d = self.player:getRect()
+  a, b, c, d = rect.translate(a,b,c,d, -self.player.w / 2, -self.player.h / 2)
+  for i=1,3 do
+    local explosion = Explosion(util.randompoint(rect(a,b,c,d)))
+    table.insert(self.entities, explosion)
+  end
 end
 
 
@@ -153,6 +159,7 @@ function Game:update(dt)
       local x, y = entity:getNose()
       x = x - 5
       table.insert(self.entities, enemy.Rocket(x, y))
+      assets.sound.rocket:play()
     end
 
     -- Check for OOB entities
@@ -161,8 +168,10 @@ function Game:update(dt)
     end
   end
 
-  self:handleInput()
-  self:handleCollisions()
+  if not self.player_death then
+    self:handleInput()
+    self:handleCollisions()
+  end
 
   -- Prune any dead entities
   remove_if(self.entities, function(e) return e.dead end)
@@ -255,7 +264,9 @@ function Game:draw()
   self:drawParallax()
 
   -- Draw objects
-  self.player:draw()
+  if not self.player_death then
+    self.player:draw()
+  end
   self:drawLocalData()
   for i, entity in ipairs(self.entities) do
     entity:draw()
