@@ -25,8 +25,8 @@ end
 
 function Input:getForce()
   local fx, fy = self.dx, self.dy
-  return math.min(fx, const.PLAYER_INPUT_LIMIT),
-         math.min(fy, const.PLAYER_INPUT_LIMIT)
+  return util.constrain(const.PLAYER_INPUT_LIMIT * -1, const.PLAYER_INPUT_LIMIT, fx),
+         util.constrain(const.PLAYER_INPUT_LIMIT * -1, const.PLAYER_INPUT_LIMIT, fy)
 end
 
 

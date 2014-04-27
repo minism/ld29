@@ -38,7 +38,7 @@ function Game:update(dt)
   self.input:update(dt)
   self.player:update(dt)
 
-  -- Handle input
+  -- Handle input and apply force to player
   local fx, fy = self.input:getForce()
   self.player.body:applyForce(vector.scale(fx, fy, const.PLAYER_FORCE))
 
@@ -65,6 +65,11 @@ function Game:draw()
 
   -- Draw UI
   console:drawLog()
+end
+
+
+function Game:mousepressed(x, y, button)
+  -- if button == "1"
 end
 
 
