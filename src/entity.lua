@@ -10,6 +10,13 @@ function Entity:init(x, y, w, h)
 end
 
 
+function Entity:popEvent()
+  local ev = self.event
+  self.event = nil
+  return ev
+end
+
+
 function Entity:getPosition()
   return self.x, self.y
 end

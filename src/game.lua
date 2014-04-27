@@ -2,6 +2,7 @@ local tween = require 'lib.tween'
 
 local assets = require 'assets'
 local const = require 'constants'
+local enemy = require 'entities.enemy'
 local Input = require 'input'
 local Spawner = require 'spawner'
 local Sprite = require 'sprite'
@@ -140,6 +141,14 @@ function Game:update(dt)
   self.player:update(dt)
   for i, entity in ipairs(self.entities) do
     entity:update(dt)
+
+    -- Check for entity events!
+    -- This is garbage design, but its 5AM and im tired, so we're doing it this way now
+    if entity:popEvent() == 'rocket' then
+      local x, y = entity:getNose()
+      x = x - 5
+      table.insert(self.entities, enemy.Rocket(x, y))
+    end
   end
 
   self:handleInput()

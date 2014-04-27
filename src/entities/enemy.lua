@@ -61,12 +61,19 @@ function Enemy:die()
 end
 
 
+----------------------------------------------------------------------------------------------------
+
+
 local Jet = Enemy:extend()
 
 function Jet:update(dt)
   Enemy.update(self, dt)
   self.x = self.x - self.speed * dt
 end
+
+
+
+----------------------------------------------------------------------------------------------------
 
 
 
@@ -84,17 +91,24 @@ function Heli:init(...)
   self.move_rect = rect(screen.width / 2, padding, screen.width - self.w,
                         screen.height / 2 - padding)
   self.tween = nil
-  self:act(0)
+  self:act(1)
 end
 
 
 function Heli:act(action)
-  local nx, ny = util.randompoint(self.move_rect)
-  console:write(nx)
-  if action > 0 then
-    self.tween = tween.start(1, self, {x = nx, y = ny}, 'outQuad')
+  action = action or math.random()
+  local nx, ny = self:getPosition()
+  if action > 0.8 then
+    -- Move
+    nx, ny = util.randompoint(self.move_rect)
+  elseif action > 0.2 then
+    -- Shoot
+    self.event = 'rocket'
   else
+    -- Wait
   end
+    local time = util.randrange(1, 1.5)
+  self.tween = tween.start(time, self, {x = nx, y = ny}, 'outQuad', function() self:act() end)
 end
 
 
@@ -121,7 +135,38 @@ function Heli:die()
 end
 
 
+----------------------------------------------------------------------------------------------------
+
+
+local Rocket = Enemy:extend { 
+  w = 8,
+  h = 5,
+
+  -- Rocket basic physics
+  vx = 50,
+  vy = 20,
+  ax = -300,
+  ay = 0,
+}
+
+
+function Rocket:update(dt)
+  self.x = self.x + self.vx * dt
+  self.y = self.y + self.vy * dt
+  self.vx = self.vx + self.ax * dt
+  -- self.vy = self.vy * 0.99 * dt
+end
+
+
+function Rocket:draw()
+  lg.draw(assets.img.rocket, self.x, self.y)
+end
+
+
+
+
 return {
   Jet = Jet,
   Heli = Heli,
+  Rocket = Rocket,
 }
