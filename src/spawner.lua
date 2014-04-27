@@ -26,7 +26,7 @@ function Spawner:init(world)
   }
 
   -- Start with timers at max
-  for k, v in pairs(self.timers) do v[1]:reset() end
+  -- for k, v in pairs(self.timers) do v[1]:reset() end
 end
 
 
@@ -96,7 +96,7 @@ end
 
 function Spawner:createMountain()
   local x = screen.width - 1
-  local y = screen.height - math.random(60, 120)
+  local y = screen.height - math.random(50, 100)
   return Mountain(self.world, x, y)
 end
 

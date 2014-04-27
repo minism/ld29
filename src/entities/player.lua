@@ -13,6 +13,7 @@ end
 
 function Player:init(world)
   PhysEntity.init(self, world, 0, 0, 32, 18)
+  self.ts = 0
   self.body:setGravityScale(0)
   self.body:setLinearDamping(const.PLAYER_DAMPING)
   self.body:setMass(const.PLAYER_MASS)
@@ -72,6 +73,7 @@ end
 
 function Player:update(dt)
   -- Apply upward force to the player to imitate helicopter lift
+  self.ts = self.ts + dt
   local bucket_mass = self.bucket.body:getMass()
   local f = (const.PLAYER_MASS * bucket_mass) * const.GRAVITY * 1.8
   self.body:applyForce(0, -f * dt)
@@ -84,7 +86,7 @@ function Player:update(dt)
 end
 
 
-function Player:draw()
+function Player:draw(flash_bucket)
   -- Draw player
   local px, py = self:getPosition()
   self:velocityDraw(assets.img.heli1)
@@ -92,6 +94,12 @@ function Player:draw()
   -- Draw bucket
   local bx, by = self.bucket:getPosition()
   self.bucket:velocityDraw(assets.img.bucket, self:getBucketScale())
+  if flash_bucket and (self.ts * 4) % 1 < 0.5 then
+    lg.setBlendMode('additive')
+    self.bucket:velocityDraw(assets.img.bucket, self:getBucketScale())
+    self.bucket:velocityDraw(assets.img.bucket, self:getBucketScale())
+    lg.setBlendMode('alpha')
+  end
 
   -- Draw rope
   lg.setLineWidth(1)
@@ -100,6 +108,7 @@ function Player:draw()
   px = px + self.w / 2
   py = py + self.h
   lg.line(px, py, bx, by)
+  lg.setBlendMode('alpha')
 end
 
 

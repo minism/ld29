@@ -4,6 +4,7 @@ local assets = require 'assets'
 local const = require 'constants'
 local enemy = require 'entities.enemy'
 local Explosion = require 'entities.explosion'
+local FishGeyser = require 'entities.fishgeyser'
 local Input = require 'input'
 local Spawner = require 'spawner'
 local Sprite = require 'sprite'
@@ -25,13 +26,15 @@ local Game = Context:extend()
 
 
 function Game:init()
-  self.debug = false
+  -- self.debug = true
   self.input = Input()
   self.intro = true
+  self.debug = false
 
   -- Setup game timers
   self.timers = {
     firing = Timer(const.FIRING_SPEED),
+    lost_fish = Timer(3),
     restart = Timer(1.5),
     intro = Timer(1.5),
   }
@@ -58,6 +61,7 @@ function Game:init()
   -- "Local data", simple data owned by game not encapsulated in entities.  This is basically
   -- for simplicity, as using Entity objects may be overengineering for things like water position.
   self.ldata = {
+    lost_amount = 0,
     water_y = screen.height / 2,
     water_sprite = Sprite(assets.img.water, 16, 16),
     water_sprite_batch = lg.newSpriteBatch(assets.img.water),
@@ -84,6 +88,7 @@ function Game:start()
   self.player:reposition(10, 10)
   self.ldata.bullets = {} 
   self.ldata.fish = 0
+  self.ldata.lost_amount = 0
   self.ldata.heli_count = 0
   self.entities = {}
   self.spawner = Spawner(self.world)
@@ -94,9 +99,6 @@ function Game:start()
   self.darken = (
       math.sin((self.darken_ts - math.pi * const.ROUND_SPEED / 2) / const.ROUND_SPEED) + 1) * 100
 
-
-  -- HIJACK
-  -- self.player.bucket_weight = 700
 end
 
 
@@ -115,7 +117,7 @@ end
 
 function Game:collectFish(fish)
   self.ldata.fish = self.ldata.fish + 1
-  local mass = math.random(18, 24)
+  local mass = math.random(15, 22)
   self.player:addBucketWeight(mass)
 
   assets.sound.fish:play()
@@ -137,7 +139,6 @@ end
 
 
 function Game:enterBoss()
-  console:write("BOSS")
   self.boss_sound = assets.sound.heli_raw:play()
   self.boss_sound:setLooping(true)
   self.boss_sound:setVolume(0.2)
@@ -306,11 +307,21 @@ function Game:handleCollisions()
     end
 
     -- Check for bucket collisions
+    local a, b, c, d = self.player:getBucketRect()
     if entity.fish then
-      local a, b, c, d = self.player:getBucketRect()
       if rect.intersects(a,b,c,d, entity:getRect()) then
         self:collectFish(entity)
         entity.dead = true
+      end
+    elseif entity.mountain then
+      if rect.intersects(a,b,c,d, entity:getRect()) then
+        if self.timers.lost_fish:check() then
+          local lost = math.min(math.random(75, 200), self.player.bucket_weight)
+          self.ldata.lost_amount = self.ldata.lost_amount + lost
+          self.player.bucket_weight = self.player.bucket_weight - lost
+          assets.sound.die:play()
+          table.insert(self.entities, FishGeyser(a, b, lost))
+        end
       end
     end
   end
@@ -331,7 +342,7 @@ function Game:draw()
 
   -- Draw objects
   if not self.player_death then
-    self.player:draw()
+    self.player:draw(self.timers.lost_fish:active())
   end
   self:drawLocalData()
   for i, entity in ipairs(self.entities) do
@@ -420,6 +431,10 @@ function Game:drawInterface()
   lg.setFont(assets.font_large)
   lg.setColor(255, 255, 255)
   lg.print("Carrying " .. self.player.bucket_weight .. " pounds", 7, 2)
+  if self.ldata.lost_amount > 0 then
+    lg.setColor(255, 50, 50)
+    lg.print("Lost " .. self.ldata.lost_amount .. " pounds", 7, 25)
+  end
 end
 
 
@@ -479,7 +494,7 @@ function Game:keypressed(key, unicode)
   --   self:start()
   -- elseif key == 'f2' then
   --   self.debug = not self.debug
-  -- elseif key == 'f3' then
+  -- if key == 'f3' then
   --   console:write(#self.entities)
   -- end
 end
