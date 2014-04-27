@@ -319,7 +319,7 @@ function Game:handleCollisions()
           local lost = math.min(math.random(75, 200), self.player.bucket_weight)
           self.ldata.lost_amount = self.ldata.lost_amount + lost
           self.player.bucket_weight = self.player.bucket_weight - lost
-          assets.sound.die:play()
+          assets.sound.losefish:play()
           table.insert(self.entities, FishGeyser(a, b, lost))
         end
       end
@@ -451,7 +451,8 @@ function Game:drawIntro()
 
   Fly your helicopter using the mouse.  Click the mouse button to fire your machine gun.
 
-  Collect fish using the bucket suspended below your helicopter.
+  Collect fish using the bucket suspended below your helicopter.  Make sure you protect your bucket
+  from underwater obstacles!.
   ]]
   lg.printf(text, padding, padding + 25, love.graphics.getWidth() - padding * 2, "center")
   lg.setColor(255, 255, 0)

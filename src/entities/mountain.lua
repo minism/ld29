@@ -20,7 +20,7 @@ end
 
 function Mountain:getRect()
   local a,b,c,d = PhysEntity.getRect(self)
-  a,b,c,d = rect.translate(a,b,c,d,0,8)
+  a,b,c,d = rect.translate(a,b,c,d,0,0)
   a,b,c,d = rect.scale(a,b,c,d,2,1)
   return rect.scaleCenter(a,b,c,d, 1.1)
 end

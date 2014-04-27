@@ -96,7 +96,7 @@ end
 
 function Spawner:createMountain()
   local x = screen.width - 1
-  local y = screen.height - math.random(50, 100)
+  local y = screen.height - math.random(40, 90)
   return Mountain(self.world, x, y)
 end
 
