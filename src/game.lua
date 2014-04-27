@@ -34,6 +34,7 @@ function Game:init()
     restart = Timer(1.5),
   }
   self.ts = 0
+  self.darken_ts = 0
   self.player_death = false
 
   -- Setup screen 
@@ -64,6 +65,7 @@ function Game:init()
 
   -- Start game
   console:write('Game initialized')
+  self.boss = false
   self:start()
 end
 
@@ -73,7 +75,7 @@ function Game:start()
   if self.music then self.music:stop() end
   self.music = assets.music.mus1:play()
   self.music:setLooping(true)
-  self.music:setVolume(0.8)
+  self.music:setVolume(1.0)
   self.player:reposition(10, 10)
   self.ldata.bullets = {} 
   self.ldata.fish = 0
@@ -81,7 +83,10 @@ function Game:start()
   self.entities = {}
   self.spawner = Spawner(self.world)
   self.ts = 0
+  self.darken_ts = 0
   self.player_death = false
+  self.darken = 0
+  self.boss = false
 end
 
 
@@ -100,7 +105,7 @@ end
 
 function Game:collectFish(fish)
   self.ldata.fish = self.ldata.fish + 1
-  local mass = math.random(10, 20)
+  local mass = math.random(18, 24)
   self.player:addBucketWeight(mass)
 
   assets.sound.fish:play()
@@ -130,6 +135,22 @@ function Game:update(dt)
   for k, v in pairs(self.timers) do v:update(dt) end
   self.ts = self.ts + dt
 
+  -- Update daynight cycle
+  if not self.boss then
+    self.darken_ts = self.darken_ts + dt
+    self.darken = (
+        math.sin((self.darken_ts - math.pi * const.ROUND_SPEED / 2) / const.ROUND_SPEED) + 1) * 100
+
+    -- Check for boss state
+    if self.darken and self.darken > 195 then
+      self.darken_ts = self.darken_ts + 1
+      console:write("BOSS")
+      self.boss = true
+      self.spawner.stage = self.spawner.stage + 1
+      table.insert(self.entities, enemy.Boss(self.spawner.stage))
+    end
+  end
+
   -- Update systems
   tween.update(dt)
   self.world:update(dt)
@@ -156,10 +177,17 @@ function Game:update(dt)
 
     -- Check for entity events!
     -- This is garbage design, but its 5AM and im tired, so we're doing it this way now
-    if entity:popEvent() == 'rocket' then
+    local event = entity:popEvent()
+    if event == 'rocket' then
       local x, y = entity:getNose()
       x = x - 5
       table.insert(self.entities, enemy.Rocket(x, y))
+      assets.sound.rocket:play()
+    elseif event == 'boss_rocket' then
+      local x, y = entity:getNose()
+      x = x - 10
+      local vy = util.randrange(-50, 50)
+      table.insert(self.entities, enemy.Rocket(x, y, 60, vy))
       assets.sound.rocket:play()
     end
 
@@ -231,6 +259,10 @@ function Game:handleCollisions()
             table.insert(self.entities, Explosion(entity:getCenter()))
             if entity.heli then
               self.ldata.heli_count = self.ldata.heli_count - 1
+            elseif entity.boss then
+              self.boss = false
+              self.spawner.stage = self.spawner.stage + 1
+              console:write "bodd eda"
             end
           end
           bullet.dead = true
@@ -257,9 +289,7 @@ function Game:draw()
   screen.apply()
 
   -- Draw background w/ day/night cycle
-  local speed = 40
-  local darken = (math.sin((self.ts - math.pi * speed / 2) / speed) + 1) * 100
-  local r,g,b = color.darken(self.ldata.sky_color, darken)
+  local r,g,b = color.darken(self.ldata.sky_color, self.darken)
   lg.setColor(r,g,b)
   lg.rectangle('fill', 0, 0, screen.width, screen.height)
   self:drawParallax()

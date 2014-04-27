@@ -82,6 +82,7 @@ local Heli = Enemy:extend {
   h = 24,
   health = 10,
   heli = true,
+  act_speed = 1,
 }
 
 
@@ -107,7 +108,7 @@ function Heli:act(action)
   else
     -- Wait
   end
-    local time = util.randrange(1, 1.5)
+  local time = util.randrange(self.act_speed, self.act_speed * 1.5)
   self.tween = tween.start(time, self, {x = nx, y = ny}, 'outQuad', function() self:act() end)
 end
 
@@ -131,9 +132,82 @@ end
 
 function Heli:die()
   Enemy.die(self)
-
   tween.stop(self.tween)
 end
+
+
+local Boss = Heli:extend {
+  w = 64,
+  h = 52,
+  boss = true,
+  act_speed = 0.75,
+  heli = false,
+}
+
+function Boss:init(stage)
+  local x = screen.width - 1
+  local y = screen.height / 3
+  self.stage = stage
+  Enemy.init(self, x, y)
+  self.health = stage * 25
+  local padding = 20
+  self.move_rect = rect(screen.width * 2 / 3, padding, screen.width - self.w,
+                        screen.height / 2 - padding)
+  self.tween = nil
+  self.firing = 0
+  self.firing_timer = Timer(1 / self.stage)
+  self:act(1)
+end
+
+function Boss:act(action)
+  if self.firing > 0 then
+    return
+  end
+
+  action = action or math.random()
+  local nx, ny = self:getPosition()
+  if action > 0.7 then
+    -- Move
+    nx, ny = util.randompoint(self.move_rect)
+  elseif action > 0.1 then
+    -- Shoot
+    self.firing = math.random(5, 8)
+  else
+    -- Wait
+  end
+  local time = util.randrange(self.act_speed, self.act_speed * 1.5)
+  self.tween = tween.start(time, self, {x = nx, y = ny}, 'outQuad', function() self:act() end)
+end
+
+
+function Boss:update(dt)
+  Heli.update(self, dt)
+  self.firing_timer:update(dt)
+  if self.firing > 0 then
+    if self.firing_timer:check() then
+      self.event = 'boss_rocket'
+      self.firing = self.firing - 1
+      if self.firing <= 0 then
+        self:act()
+      end
+    end
+  end
+end
+
+
+function Boss:draw()
+  lg.push()
+  local x, y = self:getPosition()
+  lg.draw(assets.img.boss, self.x, self.y, 0, 2, 2)
+  if self.hit_timer:active() then
+    lg.setBlendMode('additive')
+    lg.draw(assets.img.boss, self.x, self.y, 0, 2, 2)
+    lg.draw(assets.img.boss, self.x, self.y, 0, 2, 2)
+  end
+  lg.setBlendMode('alpha')
+  lg.pop()
+end
+
 
 
 ----------------------------------------------------------------------------------------------------
@@ -145,17 +219,16 @@ local Rocket = Enemy:extend {
   health = 2,
 
   -- Rocket basic physics
-  vx = 50,
-  vy = 20,
   ax = -350,
   ay = 0,
 }
 
 
-function Rocket:init(...)
-  Enemy.init(self, ...)
+function Rocket:init(x, y, vx, vy)
+  Enemy.init(self, x, y)
   self.smoke = assets.createSmokeSystem()
-  console:write('rinit')
+  self.vx = vx or 50
+  self.vy = vy or 20
 end
 
 
@@ -164,7 +237,6 @@ function Rocket:update(dt)
   self.y = self.y + self.vy * dt
   self.vx = self.vx + self.ax * dt
   self.smoke:update(dt)
-  -- self.vy = self.vy * 0.99 * dt
   self.smoke:setPosition(self.x + 14, self.y + self.h / 2)
 end
 
@@ -179,4 +251,5 @@ return {
   Jet = Jet,
   Heli = Heli,
   Rocket = Rocket,
+  Boss = Boss,
 }

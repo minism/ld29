@@ -22,9 +22,9 @@ end
 
 function Fish:update(dt)
   self.ts = self.ts + dt
-  self.x = self.x - self.speed * dt
+  local speed = self.speed + math.sin(self.ts * 2) * 25
+  self.x = self.x - speed * dt
   self.y = self.center + math.sin(self.ts * 1.5) * self.spread
-  console:write(self.y)
 end
 
 

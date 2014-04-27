@@ -3,7 +3,10 @@ local Entity = require 'entity'
 local PhysEntity = require 'phys_entity'
 
 
-local Mountain = PhysEntity:extend()
+local Mountain = PhysEntity:extend {
+  w = 32,
+  h = 32,
+}
 
 
 local VERTEX_DATA = {

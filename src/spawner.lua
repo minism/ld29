@@ -16,9 +16,10 @@ function Spawner:init(world)
   self.ts = 0
   self.queue = {}
   self.world = world
+  self.stage = 1
 
   self.timers = {
-    fish = {Timer(1, 3), self.createFish},
+    fish = {Timer(2, 4), self.createFish},
     jet = {Timer(3, 8), self.createJet},
     heli = {Timer(5, 10), self.createHeli},
     mountain = {Timer(10, 20), self.createMountain},
@@ -32,13 +33,15 @@ end
 function Spawner:update(dt)
   self.ts = self.ts + dt
 
+  if self.stage % 2 > 0 then
   -- Update timers
-  for k, v in pairs(self.timers) do 
-    v[1]:update(dt)
-    if v[1]:check() then
-      local e = v[2](self)
-      if e then
-        table.insert(self.queue, e)
+    for k, v in pairs(self.timers) do 
+      v[1]:update(dt)
+      if v[1]:check() then
+        local e = v[2](self)
+        if e then
+          table.insert(self.queue, e)
+        end
       end
     end
   end
@@ -72,6 +75,9 @@ function Spawner:createJet()
 end
 
 function Spawner:createHeli()
+  if self.ts < 30 then
+    return
+  end
   local x = screen.width - 1
   local y = util.randrange(20, screen.height / 2 - 20) 
   local speed = 100
