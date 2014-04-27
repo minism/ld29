@@ -5,22 +5,35 @@ local PhysEntity = require 'phys_entity'
 local Player = PhysEntity:extend()
 
 
+local function getBucketPosition(player)
+  return player.body:getX(), player.body:getY() + const.ROPE_LENGTH * const.METER_SCALE
+end
+
+
 function Player:init(world)
-  PhysEntity.init(self, world, 100, 100, 40, 25)
+  PhysEntity.init(self, world, 0, 0, 40, 25)
   self.body:setGravityScale(0)
   self.body:setLinearDamping(const.PLAYER_DAMPING)
   self.body:setMass(const.PLAYER_MASS)
 
   -- Setup fish bucket
-  local bucket_y = self.body:getY() + const.ROPE_LENGTH * const.METER_SCALE
-  self.bucket = PhysEntity(world, 100, bucket_y, 30)
+  local bx, by = getBucketPosition(self)
+  self.bucket = PhysEntity(world, bx, by, 30)
   self.bucket.body:setMass(const.BUCKET_MASS)
 
   -- Setup joints
-  local a, b = self:getPos()
-  local c, d = self.bucket:getPos()
+  local px, py = self:getPos()
   self.rope = love.physics.newRopeJoint(
-      self.body, self.bucket.body, a, b, c, d, const.ROPE_LENGTH * const.METER_SCALE)
+      self.body, self.bucket.body, px, py, bx, by, const.ROPE_LENGTH * const.METER_SCALE)
+end
+
+
+-- Reposition entire system and stop forces.
+function Player:reposition(x, y)
+  self.body:setLinearVelocity(0, 0)
+  self.bucket.body:setLinearVelocity(0, 0)
+  self.body:setPosition(x, y)
+  self.bucket.body:setPosition(getBucketPosition(self))
 end
 
 
@@ -28,6 +41,13 @@ function Player:update(dt)
   -- Apply upward force to the player to imitate helicopter lift
   local f = (const.PLAYER_MASS * const.BUCKET_MASS) * const.GRAVITY * 2.2
   self.body:applyForce(0, -f * dt)
+
+  -- Constrain player
+  local x, y = self:getPos()
+  local sx, sy = lg.getWidth(), lg.getHeight()
+  if x < 0 then x = 0 elseif x + self.w > sx then  x = sx - self.w end
+  if y < 0 then y = 0 end
+  self.body:setPosition(x, y)
 end
 
 
