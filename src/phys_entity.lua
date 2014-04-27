@@ -1,4 +1,6 @@
-local PhysEntity = Object:extend()
+local Entity = require 'entity'
+
+local PhysEntity = Entity:extend()
 
 
 function PhysEntity:init(world, x, y, w, h)
@@ -13,9 +15,11 @@ function PhysEntity:init(world, x, y, w, h)
 end
 
 
-function PhysEntity:getPos()
+-- Override
+function PhysEntity:getPosition()
   return self.body:getX(), self.body:getY()
 end
+
 
 
 return PhysEntity

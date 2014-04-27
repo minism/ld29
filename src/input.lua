@@ -30,4 +30,9 @@ function Input:getForce()
 end
 
 
+function Input:getFiring()
+  return love.mouse.isDown('l')
+end
+
+
 return Input

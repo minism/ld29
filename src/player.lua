@@ -23,7 +23,7 @@ function Player:init(world)
   self.bucket.body:setLinearDamping(const.PLAYER_BUCKET_DAMPING)
 
   -- Setup joints
-  local px, py = self:getPos()
+  local px, py = self:getPosition()
   self.rope = love.physics.newRopeJoint(
       self.body, self.bucket.body, px, py, bx, by, const.ROPE_LENGTH * const.METER_SCALE)
 end
@@ -44,7 +44,7 @@ function Player:update(dt)
   self.body:applyForce(0, -f * dt)
 
   -- Constrain player
-  local x, y = self:getPos()
+  local x, y = self:getPosition()
   local sx, sy = lg.getWidth(), lg.getHeight()
   if x < 0 then x = 0 elseif x + self.w > sx then  x = sx - self.w end
   if y < 0 then y = 0 end
@@ -54,12 +54,12 @@ end
 
 function Player:draw()
   -- Draw player
-  local px, py = self:getPos()
+  local px, py = self:getPosition()
   lg.setColor(200, 100, 0)
   lg.rectangle('fill', px, py, self.w, self.h)
 
   -- Draw bucket
-  local bx, by = self.bucket:getPos()
+  local bx, by = self.bucket:getPosition()
   lg.setColor(255, 255, 2550)
   lg.rectangle('fill', bx, by, self.bucket.w, self.bucket.h)
 
