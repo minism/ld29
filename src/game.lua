@@ -42,7 +42,7 @@ function Game:init()
 
   -- Setup game subsystems
   self.player = Player(self.world)
-  self.spawner = Spawner()
+  self.spawner = Spawner(self.world)
 
   -- Entity objects fed by spawner
   self.entities = {}
@@ -77,7 +77,7 @@ function Game:start()
   self.ldata.fish = 0
   self.ldata.heli_count = 0
   self.entities = {}
-  self.spawner = Spawner()
+  self.spawner = Spawner(self.world)
 end
 
 
