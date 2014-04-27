@@ -4,14 +4,15 @@ local PhysEntity = Entity:extend()
 
 
 function PhysEntity:init(world, x, y, w, h)
-  h = h or w
+  Entity.init(self, x, y, w, h)
   self.body = love.physics.newBody(world, x, y, 'dynamic')
-  self.shape = love.physics.newRectangleShape(w, h)
+  self.shape = love.physics.newRectangleShape(self.w, self.h)
   self.fixture = love.physics.newFixture(self.body, self.shape)
   self.fixture:setRestitution(0.9)
 
-  -- Kinda dangerous to use this
-  self.w, self.h = w, h
+  -- Unset for safety
+  self.x = nil
+  self.y = nil
 end
 
 
