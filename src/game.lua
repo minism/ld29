@@ -194,7 +194,7 @@ function Game:draw()
   -- Draw background
   lg.setColor(135, 206, 255)
   lg.rectangle('fill', 0, 0, screen.width, screen.height)
-  self:drawWater()
+  self:drawParallax()
 
   -- Draw objects
   self.player:draw()
@@ -213,7 +213,19 @@ function Game:draw()
 end
 
 
-function Game:drawWater()
+function Game:drawParallax()
+  -- Draw land
+  lg.setColor(150, 150, 150, 100)
+  local land_y = 60
+  local offset = (self.ts * 10) % screen.w
+  lg.draw(assets.img.land, -offset, land_y)
+  lg.draw(assets.img.land, -offset + screen.w, land_y)
+  lg.setColor(150, 150, 150)
+  local offset = (self.ts * 20) % screen.w
+  lg.draw(assets.img.land2, -offset, land_y + 20)
+  lg.draw(assets.img.land2, -offset + screen.w, land_y + 20)
+
+  -- Draw water
   lg.setColor(0, 50, 200)
   local sprite, batch = self.ldata.water_sprite, self.ldata.water_sprite_batch
   batch:clear()

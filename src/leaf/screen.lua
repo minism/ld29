@@ -31,6 +31,8 @@ local screen = {
     -- Represents the dimensions of the game screen (as opposed to resolution)
     width = w,
     height = h,
+    w = w,
+    h = h,
 
     -- Scale boundaries
     min_scale = 1,
@@ -50,10 +52,12 @@ end
 
 function screen.setWidth(w)
     screen.width = w
+    screen.w = w
 end
 
 function screen.setHeight(h)
     screen.height = h
+    screen.h = h
 end
 
 function screen.setMinScale(s)
