@@ -24,7 +24,11 @@ end
 
 
 function Input:getForce()
+  -- Terrible fix for mac that I can't figure out
   local fx, fy = self.dx, self.dy
+  if love.system.getOS() == 'OS X' and math.abs(fy) > 1 then
+    fy = fy + 20
+  end
   return util.constrain(const.PLAYER_INPUT_LIMIT * -1, const.PLAYER_INPUT_LIMIT, fx),
          util.constrain(const.PLAYER_INPUT_LIMIT * -1, const.PLAYER_INPUT_LIMIT, fy)
 end
