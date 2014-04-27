@@ -22,11 +22,35 @@ function Player:init(world)
   self.bucket = PhysEntity(world, bx, by, 32)
   self.bucket.body:setMass(const.PLAYER_BUCKET_MASS)
   self.bucket.body:setLinearDamping(const.PLAYER_BUCKET_DAMPING)
+  self.bucket_weight = const.PLAYER_BUCKET_MASS
 
   -- Setup joints
   local px, py = self:getPosition()
   self.rope = love.physics.newRopeJoint(
       self.body, self.bucket.body, px, py, bx, by, const.ROPE_LENGTH * const.METER_SCALE)
+end
+
+
+-- Add weight to bucket
+function Player:addBucketWeight(w)
+  self.bucket_weight = self.bucket_weight + w
+  self.bucket.body:setMass(self.bucket_weight)
+end
+
+
+-- Get scaling factor for bucket AABB
+function Player:getBucketScale()
+  return 0.5 + self.bucket_weight / const.PLAYER_BUCKET_GROWTH
+end
+
+
+-- Get AABB for bucket
+function Player:getBucketRect()
+  local scale = self:getBucketScale()
+  local a,b,c,d = self.bucket:getRect()
+  a,b,c,d = rect.scale(a,b,c,d, scale, scale)
+  a,b,c,d = rect.translate(a,b,c,d, - self.w * scale / 2 + self.w / 2, 0)
+  return a,b,c,d
 end
 
 
@@ -41,7 +65,8 @@ end
 
 function Player:update(dt)
   -- Apply upward force to the player to imitate helicopter lift
-  local f = (const.PLAYER_MASS * const.PLAYER_BUCKET_MASS) * const.GRAVITY * 2
+  local bucket_mass = self.bucket.body:getMass()
+  local f = (const.PLAYER_MASS * bucket_mass) * const.GRAVITY * 2
   self.body:applyForce(0, -f * dt)
 
   -- Constrain player
@@ -59,7 +84,7 @@ function Player:draw()
 
   -- Draw bucket
   local bx, by = self.bucket:getPosition()
-  self.bucket:velocityDraw(assets.img.bucket)
+  self.bucket:velocityDraw(assets.img.bucket, self:getBucketScale())
 
   -- Draw rope
   lg.setLineWidth(1)

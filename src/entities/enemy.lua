@@ -28,12 +28,13 @@ end
 
 function Enemy:draw()
   local x, y = self:getPosition()
+  lg.draw(assets.img.heli2, self.x, self.y)
   if self.hit_timer:active() then
-    lg.setColor(255, 100, 100)
-  else
-    lg.setColor(255, 255, 255)
+    lg.setBlendMode('additive')
+    lg.draw(assets.img.heli2, self.x, self.y)
+    lg.draw(assets.img.heli2, self.x, self.y)
   end
-  lg.draw(assets.img.heli2, self.x, self.y) 
+  lg.setBlendMode('alpha')
 end
 
 

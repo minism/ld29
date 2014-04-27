@@ -16,7 +16,7 @@ function Spawner:init()
   self.queue = {}
 
   self.timers = {
-    fish = Timer(3, 8),
+    fish = Timer(1),
     enemy = Timer(3, 8),
   }
 

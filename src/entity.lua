@@ -52,13 +52,15 @@ end
 
 
 -- Draw an image with correct rotation based on velocity
-function Entity:velocityDraw(image)
+function Entity:velocityDraw(image, scale)
+  scale = scale or 1
   local x, y = self:getPosition()
   local vx, vy = self:getVelocity()
   lg.push()
   lg.setColor(255, 255, 255)
-  lg.translate(x + self.w / 2, y + self.h / 2)
+  lg.translate(x + self.w / 2, y + (self.h / 2) * scale)
   lg.rotate(vx / 1000)
+  lg.scale(scale)
   lg.draw(image, -self.w / 2, -self.h / 2)
   lg.pop()
 end

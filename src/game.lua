@@ -20,6 +20,7 @@ local Game = Context:extend()
 
 
 function Game:init()
+  self.debug = false
   self.input = Input()
 
   -- Setup game timers
@@ -81,6 +82,7 @@ end
 
 function Game:collectFish(fish)
   self.ldata.fish = self.ldata.fish + 1
+  self.player:addBucketWeight(fish.mass)
 end
 
 
@@ -176,10 +178,13 @@ function Game:handleCollisions()
       end
     end
 
-    -- Other checks
-    if entity.fish and self.player.bucket:intersects(entity) then
-      self:collectFish(entity)
-      entity.dead = true
+    -- Check for bucket collisions
+    if entity.fish then
+      local a, b, c, d = self.player:getBucketRect()
+      if rect.intersects(a,b,c,d, entity:getRect()) then
+        self:collectFish(entity)
+        entity.dead = true
+      end
     end
   end
 end
@@ -203,7 +208,9 @@ function Game:draw()
     entity:draw()
   end
 
-  -- self:drawDebug()
+  if self.debug then
+    self:drawDebug()
+  end
   screen.revert()
 
   -- Draw UI
@@ -254,7 +261,7 @@ end
 -- Draw debugging data in screen transformation
 function Game:drawDebug()
   -- Draw BBs
-  local a,b,c,d = self.player.bucket:getRect()
+  local a,b,c,d = self.player:getBucketRect()
   lg.setColor(255, 0, 0)
   lg.rectangle('line', a, b, c - a, d - b)
   local a,b,c,d = self.player:getRect()
@@ -273,6 +280,7 @@ function Game:drawDebugUi()
   local sx, sy = lg.getWidth(), lg.getHeight()
   local r = rect(sx - 200, 10, sx, 100)
   lg.print("Fish collected:  " .. self.ldata.fish, r.left, r.top)
+  lg.print("Bucket weight:  " .. self.player.bucket_weight, r.left, r.top + 20)
 end
 
 
@@ -289,6 +297,8 @@ function Game:keypressed(key, unicode)
     love.event.quit()
   elseif key == 'f1' then
     self:start()
+  elseif key == 'f2' then
+    self.debug = not self.debug
   end
 end
 
