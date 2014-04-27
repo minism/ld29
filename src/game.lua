@@ -53,6 +53,9 @@ function Game:init()
     fish = 0,
   }
 
+  -- Start music
+  love.audio.play(assets.music.musdemo)
+
   -- Start game
   console:write('Game initialized')
   self:start()
@@ -77,17 +80,22 @@ function Game:fire()
   local bullet = vector(x + 1, y + 2)
   bullet.speed = const.BULLET_SPEED
   table.insert(self.ldata.bullets, bullet)
+
+  assets.sound.shot:play()
 end
 
 
 function Game:collectFish(fish)
   self.ldata.fish = self.ldata.fish + 1
   self.player:addBucketWeight(fish.mass)
+
+  assets.sound.fish:play()
 end
 
 
 function Game:playerDeath()
-  console:write "DEAD"
+  assets.sound.die:play()
+
   self:start()
 end
 

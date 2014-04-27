@@ -39,11 +39,15 @@ end
 
 
 function Enemy:hit(n)
+
   local n = n or 1
   self.hit_timer:reset()
   self.health = self.health - 1
   if self.health < 1 then
+    assets.sound.enemy_die:play()
     self:die()
+  else
+    assets.sound.hit:play()
   end
 end
 
