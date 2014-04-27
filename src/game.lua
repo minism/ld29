@@ -226,7 +226,7 @@ function Game:drawParallax()
   lg.draw(assets.img.land2, -offset + screen.w, land_y + 20)
 
   -- Draw water
-  lg.setColor(0, 50, 200)
+  lg.setColor(0, 100, 150)
   local sprite, batch = self.ldata.water_sprite, self.ldata.water_sprite_batch
   batch:clear()
   local quad = sprite:getQuad()
