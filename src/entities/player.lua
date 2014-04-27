@@ -55,12 +55,11 @@ end
 function Player:draw()
   -- Draw player
   local px, py = self:getPosition()
-  lg.setColor(255, 255, 255)
-  lg.draw(assets.img.heli1, px, py)
+  self:velocityDraw(assets.img.heli1)
 
   -- Draw bucket
   local bx, by = self.bucket:getPosition()
-  lg.draw(assets.img.bucket, bx, by)
+  self.bucket:velocityDraw(assets.img.bucket)
 
   -- Draw rope
   lg.setLineWidth(1)

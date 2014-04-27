@@ -22,5 +22,11 @@ function PhysEntity:getPosition()
 end
 
 
+-- Override
+function PhysEntity:getVelocity()
+  return self.body:getLinearVelocity()
+end
+
+
 
 return PhysEntity

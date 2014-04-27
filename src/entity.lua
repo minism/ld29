@@ -36,12 +36,31 @@ function Entity:intersects(other)
 end
 
 
+-- Phys entity can use box2d for this, but we have to mock it out for regular entitie
+function Entity:getVelocity()
+  return 0, 0
+end
+
+
 function Entity:update(dt) end
 
 -- TODO debug protect this
 function Entity:draw() 
   lg.setColor(255, 255, 255)
   lg.rectangle('fill', self.x, self.y, self.w, self.h)
+end
+
+
+-- Draw an image with correct rotation based on velocity
+function Entity:velocityDraw(image)
+  local x, y = self:getPosition()
+  local vx, vy = self:getVelocity()
+  lg.push()
+  lg.setColor(255, 255, 255)
+  lg.translate(x + self.w / 2, y + self.h / 2)
+  lg.rotate(vx / 1000)
+  lg.draw(image, -self.w / 2, -self.h / 2)
+  lg.pop()
 end
 
 
