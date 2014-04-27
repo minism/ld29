@@ -27,14 +27,18 @@ local Game = Context:extend()
 function Game:init()
   self.debug = false
   self.input = Input()
+  self.intro = true
 
   -- Setup game timers
   self.timers = {
     firing = Timer(const.FIRING_SPEED),
     restart = Timer(1.5),
+    intro = Timer(1.5),
   }
   self.ts = 0
-  self.darken_ts = 0
+  self.darken_ts = -30
+    self.darken = (
+        math.sin((self.darken_ts - math.pi * const.ROUND_SPEED / 2) / const.ROUND_SPEED) + 1) * 100
   self.player_death = false
 
   -- Setup screen 
@@ -84,14 +88,14 @@ function Game:start()
   self.entities = {}
   self.spawner = Spawner(self.world)
   self.ts = 0
-  self.darken_ts = 0
+  self.darken_ts = -30
   self.player_death = false
-  self.darken = 0
   self.boss = false
+  self.darken = (
+      math.sin((self.darken_ts - math.pi * const.ROUND_SPEED / 2) / const.ROUND_SPEED) + 1) * 100
 
 
   -- HIJACK
-  self.darken_ts = -15
   -- self.player.bucket_weight = 700
 end
 
@@ -144,7 +148,7 @@ end
 
 
 function Game:exitBoss(boss)
-  self.darken_ts = self.darken_ts + const.ROUND_SPEED *
+  self.darken_ts = self.darken_ts + const.ROUND_SPEED
   self.boss = false
   self.spawner:advance()
   if self.boss_sound then self.boss_sound:stop() end
@@ -165,6 +169,11 @@ end
 function Game:update(dt)
   -- Update timers
   for k, v in pairs(self.timers) do v:update(dt) end
+
+  if self.intro then
+    return
+  end
+
   self.ts = self.ts + dt
 
   -- Update daynight cycle
@@ -197,7 +206,7 @@ function Game:update(dt)
     end
   end
 
-  -- Update entity data
+  -- Update entity datenda
   self:updateLocalData(dt)
   self.player:update(dt)
   for i, entity in ipairs(self.entities) do
@@ -226,7 +235,7 @@ function Game:update(dt)
   end
 
   if not self.player_death then
-    self:handleInput()
+    self:handleInput(dt)
     self:handleCollisions()
   end
 
@@ -250,10 +259,10 @@ function Game:updateLocalData(dt)
 end
 
 
-function Game:handleInput()
+function Game:handleInput(dt)
   -- Apply force to player
   local fx, fy = self.input:getForce()
-  self.player.body:applyForce(vector.scale(fx, fy, const.PLAYER_FORCE))
+  self.player.body:applyForce(vector.scale(fx, fy, const.PLAYER_FORCE * dt))
 
   -- Fire bullets
   if self.input:getFiring() and self.timers.firing:check() then
@@ -329,7 +338,7 @@ function Game:draw()
     entity:draw()
   end
 
-  if self.player_death then
+  if self.player_death or self.intro then
     lg.setColor(0, 0, 0, 128)
     lg.rectangle('fill', 0, 0, screen.width, screen.height)
   end
@@ -340,7 +349,9 @@ function Game:draw()
   screen.revert()
 
   -- Draw UI
-  if not self.player_death then
+  if self.intro then
+    self:drawIntro()
+  elseif not self.player_death then
     self:drawInterface()
   else
     self:drawDeathScreen()
@@ -348,7 +359,6 @@ function Game:draw()
   if self.debug then
     console:drawLog()
   end
-
 end
 
 
@@ -413,6 +423,27 @@ function Game:drawInterface()
 end
 
 
+function Game:drawIntro()
+  lg.setFont(assets.font_huge)
+  local padding = 150
+  lg.setColor(255, 255, 0)
+  lg.printf("Fishcopter", padding, padding - 100, love.graphics.getWidth() - padding * 2, "center")
+  lg.setColor(255, 255, 255)
+  lg.setFont(assets.font_large)
+  local text = [[
+
+  Poach as many endangered sharks as possible and avoid being shot down by wildlife protection services !!
+
+  Fly your helicopter using the mouse.  Click the mouse button to fire your machine gun.
+
+  Collect fish using the bucket suspended below your helicopter.
+  ]]
+  lg.printf(text, padding, padding + 25, love.graphics.getWidth() - padding * 2, "center")
+  lg.setColor(255, 255, 0)
+  lg.printf("Press any button to start", padding, 600, love.graphics.getWidth() - padding * 2, "center")
+end
+
+
 function Game:drawDeathScreen()
   lg.setFont(assets.font_huge)
   lg.setColor(255, 255, 255)
@@ -429,6 +460,8 @@ end
 function Game:mousepressed(x, y, button)
   if self.player_death and self.timers.restart:check() then
     self:start()
+  elseif self.intro and self.timers.intro:check() then
+    self.intro = false
   end
 end
 
@@ -438,14 +471,17 @@ function Game:keypressed(key, unicode)
     love.event.quit()
   elseif self.player_death and self.timers.restart:check() then
     self:start()
-  -- TODO protect debug keys
-  elseif key == 'f1' then
-    self:start()
-  elseif key == 'f2' then
-    self.debug = not self.debug
-  elseif key == 'f3' then
-    console:write(#self.entities)
+  elseif self.intro and self.timers.intro:check() then
+    self.intro = false
   end
+  -- TODO protect debug keys
+  -- elseif key == 'f1' then
+  --   self:start()
+  -- elseif key == 'f2' then
+  --   self.debug = not self.debug
+  -- elseif key == 'f3' then
+  --   console:write(#self.entities)
+  -- end
 end
 
 
