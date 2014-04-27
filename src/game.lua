@@ -73,6 +73,7 @@ end
 -- Start or restart game
 function Game:start()
   if self.music then self.music:stop() end
+  if self.boss_sound then self.boss_sound:stop() end
   self.music = assets.music.mus1:play()
   self.music:setLooping(true)
   self.music:setVolume(1.0)
@@ -87,6 +88,11 @@ function Game:start()
   self.player_death = false
   self.darken = 0
   self.boss = false
+
+
+  -- HIJACK
+  self.darken_ts = -15
+  -- self.player.bucket_weight = 700
 end
 
 
@@ -126,6 +132,32 @@ function Game:playerDeath()
 end
 
 
+function Game:enterBoss()
+  console:write("BOSS")
+  self.boss_sound = assets.sound.heli_raw:play()
+  self.boss_sound:setLooping(true)
+  self.boss_sound:setVolume(0.2)
+  self.boss = true
+  self.spawner:advance()
+  table.insert(self.entities, enemy.Boss(self.spawner.stage))
+end
+
+
+function Game:exitBoss(boss)
+  self.darken_ts = self.darken_ts + const.ROUND_SPEED *
+  self.boss = false
+  self.spawner:advance()
+  if self.boss_sound then self.boss_sound:stop() end
+  assets.sound.die:play()
+  local a, b, c, d = boss:getRect()
+  a, b, c, d = rect.translate(a,b,c,d, -self.player.w / 2, -self.player.h / 2)
+  for i=1,10 do
+    local explosion = Explosion(util.randompoint(rect(a,b,c,d)))
+    table.insert(self.entities, explosion)
+  end
+end
+
+
 ----------------------------------------------------------------------------------------------------
 -- Update logic
 
@@ -143,11 +175,7 @@ function Game:update(dt)
 
     -- Check for boss state
     if self.darken and self.darken > 195 then
-      self.darken_ts = self.darken_ts + 1
-      console:write("BOSS")
-      self.boss = true
-      self.spawner.stage = self.spawner.stage + 1
-      table.insert(self.entities, enemy.Boss(self.spawner.stage))
+      self:enterBoss()
     end
   end
 
@@ -260,9 +288,7 @@ function Game:handleCollisions()
             if entity.heli then
               self.ldata.heli_count = self.ldata.heli_count - 1
             elseif entity.boss then
-              self.boss = false
-              self.spawner.stage = self.spawner.stage + 1
-              console:write "bodd eda"
+              self:exitBoss(entity)
             end
           end
           bullet.dead = true

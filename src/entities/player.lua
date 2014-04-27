@@ -12,7 +12,7 @@ end
 
 
 function Player:init(world)
-  PhysEntity.init(self, world, 0, 0, 32, 24)
+  PhysEntity.init(self, world, 0, 0, 32, 18)
   self.body:setGravityScale(0)
   self.body:setLinearDamping(const.PLAYER_DAMPING)
   self.body:setMass(const.PLAYER_MASS)
@@ -28,6 +28,12 @@ function Player:init(world)
   local px, py = self:getPosition()
   self.rope = love.physics.newRopeJoint(
       self.body, self.bucket.body, px, py, bx, by, const.ROPE_LENGTH * const.METER_SCALE)
+end
+
+
+function Player:getRect()
+  local a, b, c, d = PhysEntity.getRect(self)
+  return rect.translate(a, b, c, d, 0, 4)
 end
 
 

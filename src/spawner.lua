@@ -20,13 +20,22 @@ function Spawner:init(world)
 
   self.timers = {
     fish = {Timer(2, 4), self.createFish},
-    jet = {Timer(3, 8), self.createJet},
+    jet = {Timer(4, 8), self.createJet},
     heli = {Timer(5, 10), self.createHeli},
     mountain = {Timer(10, 20), self.createMountain},
   }
 
   -- Start with timers at max
   for k, v in pairs(self.timers) do v[1]:reset() end
+end
+
+
+function Spawner:advance()
+  self.stage = self.stage + 1
+  for k, v in pairs(self.timers) do
+    v[1].duration_low = v[1].duration_low * const.PROGRESSION_FACTOR
+    if v[1].duration_high then v[1].duration_high = v[1].duration_high * const.PROGRESSION_FACTOR end
+  end
 end
 
 
@@ -62,8 +71,9 @@ end
 function Spawner:createFish()
   local x = screen.width - 1
   local y = util.randrange(screen.height / 2 + 50, screen.height - 80)
-  local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE)
-  local spread = math.random(10, 20)
+  local factor = 1 + (self.stage - 1) * 0.25
+  local speed = util.randvariance(const.FISH_SPEED_BASE * factor, const.FISH_SPEED_VARIANCE)
+  local spread = math.random(20, 40)
   return Fish(x, y, speed, spread)
 end
 

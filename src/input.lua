@@ -31,7 +31,7 @@ end
 
 
 function Input:getFiring()
-  return love.mouse.isDown('l')
+  return love.mouse.isDown('l') or love.mouse.isDown('r')
 end
 
 
