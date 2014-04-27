@@ -56,6 +56,7 @@ function Game:init()
     bullets = {},
     fish = 0,
     heli_count = 0,
+    sky_color = {135, 206, 255},
   }
 
   -- Start music
@@ -242,8 +243,11 @@ end
 function Game:draw()
   screen.apply()
 
-  -- Draw background
-  lg.setColor(135, 206, 255)
+  -- Draw background w/ day/night cycle
+  local speed = 50
+  local darken = (math.sin((self.ts - math.pi * speed / 2) / speed) + 1) * 100
+  local r,g,b = color.darken(self.ldata.sky_color, darken)
+  lg.setColor(r,g,b)
   lg.rectangle('fill', 0, 0, screen.width, screen.height)
   self:drawParallax()
 

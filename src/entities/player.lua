@@ -19,7 +19,7 @@ function Player:init(world)
 
   -- Setup fish bucket
   local bx, by = getBucketPosition(self)
-  self.bucket = PhysEntity(world, bx, by, 32)
+  self.bucket = PhysEntity(world, bx, by, 32, 32, 0.2)
   self.bucket.body:setMass(const.PLAYER_BUCKET_MASS)
   self.bucket.body:setLinearDamping(const.PLAYER_BUCKET_DAMPING)
   self.bucket_weight = const.PLAYER_BUCKET_MASS
@@ -66,7 +66,7 @@ end
 function Player:update(dt)
   -- Apply upward force to the player to imitate helicopter lift
   local bucket_mass = self.bucket.body:getMass()
-  local f = (const.PLAYER_MASS * bucket_mass) * const.GRAVITY * 2
+  local f = (const.PLAYER_MASS * bucket_mass) * const.GRAVITY * 1.8
   self.body:applyForce(0, -f * dt)
 
   -- Constrain player
