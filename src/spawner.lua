@@ -1,6 +1,7 @@
 local const = require 'constants'
 local Timer = require 'timer'
 local util = require 'util'
+local Enemy = require 'entities.enemy'
 local Fish = require 'entities.fish'
 
 local Spawner = Object:extend()
@@ -17,7 +18,8 @@ function Spawner:init()
   self.queue = {}
 
   self.timers = {
-    fish = Timer(3, 8)
+    fish = Timer(3, 8),
+    enemy = Timer(3, 8),
   }
 
   -- Start with timers at max
@@ -33,6 +35,9 @@ function Spawner:update(dt)
 
   if self.timers.fish:check() then
     table.insert(self.queue, self:createFish())
+  end
+  if self.timers.enemy:check() then
+    table.insert(self.queue, self:createEnemy())
   end
 end
 
@@ -51,8 +56,15 @@ end
 function Spawner:createFish()
   local x = sx - Fish.w
   local y = util.randrange(sy / 2, sy - 100) -- TODO water pos and constants for this
-  local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE)
+  local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE) / 2
   return Fish(x, y, speed)
+end
+
+function Spawner:createEnemy()
+  local x = sx - Fish.w
+  local y = util.randrange(100, sy / 2 - 100) -- TODO water pos and constants for this
+  local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE)
+  return Enemy(x, y, speed)
 end
 
 return Spawner

@@ -54,6 +54,9 @@ end
 function Game:start()
   self.player:reposition(100, 100)
   self.ldata.bullets = {}
+  self.ldata.fish = 0
+  self.entities = {}
+  self.spawner = Spawner()
 end
 
 
@@ -62,12 +65,19 @@ end
 
 function Game:fire()
   local bullet = vector(self.player:getNose())
+  bullet.speed = const.BULLET_SPEED
   table.insert(self.ldata.bullets, bullet)
 end
 
 
 function Game:collectFish(fish)
   self.ldata.fish = self.ldata.fish + 1
+end
+
+
+function Game:playerDeath()
+  console:write "DEAD"
+  self:start()
 end
 
 
@@ -101,13 +111,14 @@ function Game:update(dt)
 
   -- Prune any dead entities
   remove_if(self.entities, function(e) return e.dead end)
+  remove_if(self.ldata.bullets, function(e) return e.dead end)
 end
 
 
 -- Update local data owned by Game
 function Game:updateLocalData(dt)
   for i, bullet in ipairs(self.ldata.bullets) do
-    bullet.x, bullet.y = vector.translate(bullet, const.BULLET_SPEED * dt, 0)
+    bullet.x, bullet.y = vector.translate(bullet, bullet.speed * dt, 0)
   end
 end
 
@@ -128,13 +139,28 @@ function Game:handleCollisions()
   -- Check player collisions
   local px, py = self.player:getPosition()
   if py > self.ldata.water_y - self.player.h / 2 then
-    -- TODO
-    console:write "Water death"
-    self:start()
+    self:playerDeath()
   end
 
-  -- Check bucket collisions
+  -- Check entity collisions
   for i, entity in ipairs(self.entities) do
+
+    -- Enemy checks
+    if entity.enemy then
+      if self.player:intersects(entity) then
+        return self:playerDeath() -- Short circuit
+      end
+
+      for i, bullet in ipairs(self.ldata.bullets) do
+        local a,b,c,d = entity:getRect()
+        if rect.contains(a,b,c,d, bullet.x, bullet.y) then
+          entity:hit()
+          bullet.dead = true
+        end
+      end
+    end
+
+    -- Other checks
     if entity.fish and self.player.bucket:intersects(entity) then
       self:collectFish(entity)
       entity.dead = true

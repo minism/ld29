@@ -31,5 +31,9 @@ function Timer:check()
   return false
 end
 
+function Timer:active()
+  return self.t > 0
+end
+
 
 return Timer
