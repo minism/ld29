@@ -63,6 +63,7 @@ function Player:draw()
 
   -- Draw rope
   lg.setLineWidth(1)
+  lg.setColor(255, 255, 0)
   bx = bx + self.bucket.w / 2
   px = px + self.w / 2
   py = py + self.h

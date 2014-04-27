@@ -1,6 +1,8 @@
+local assets = require 'assets'
 local const = require 'constants'
 local Input = require 'input'
 local Spawner = require 'spawner'
+local Sprite = require 'sprite'
 local Timer = require 'timer'
 local Player = require 'entities.player'
 
@@ -24,6 +26,7 @@ function Game:init()
   self.timers = {
     firing = Timer(const.FIRING_SPEED),
   }
+  self.ts = 0
 
   -- Setup screen 
   screen.setSize(const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
@@ -43,6 +46,8 @@ function Game:init()
   -- for simplicity, as using Entity objects may be overengineering for things like water position.
   self.ldata = {
     water_y = screen.height / 2,
+    water_sprite = Sprite(assets.img.water, 16, 16),
+    water_sprite_batch = lg.newSpriteBatch(assets.img.water),
     bullets = {},
     fish = 0,
   }
@@ -92,6 +97,7 @@ end
 function Game:update(dt)
   -- Update timers
   for k, v in pairs(self.timers) do v:update(dt) end
+  self.ts = self.ts + dt
 
   -- Update systems
   self.world:update(dt)
@@ -127,6 +133,9 @@ function Game:updateLocalData(dt)
       bullet.dead = true
     end
   end
+
+  -- Update local sprites
+  self.ldata.water_sprite:update(dt)
 end
 
 
@@ -182,11 +191,10 @@ end
 function Game:draw()
   screen.apply()
 
-  -- Draw bg
-  lg.setColor(0, 0, 200)
+  -- Draw background
+  lg.setColor(135, 206, 255)
   lg.rectangle('fill', 0, 0, screen.width, screen.height)
-  lg.setColor(0, 50, 100)
-  lg.rectangle('fill', 0, self.ldata.water_y, screen.width, screen.height)
+  self:drawWater()
 
   -- Draw objects
   self.player:draw()
@@ -202,6 +210,22 @@ function Game:draw()
   console:drawLog()
   self:drawDebugUi()
 
+end
+
+
+function Game:drawWater()
+  lg.setColor(0, 50, 200)
+  local sprite, batch = self.ldata.water_sprite, self.ldata.water_sprite_batch
+  batch:clear()
+  local quad = sprite:getQuad()
+  for i=0, screen.width / sprite.w + 1 do
+    batch:add(quad, i * sprite.w, self.ldata.water_y)
+  end
+  -- Add corner quad to fill in the rest of water
+  batch:add(sprite.corner_quad, 0, self.ldata.water_y + sprite.h, 0,
+            screen.width + sprite.w, screen.height / 2)
+  local offset = (self.ts * 60) % sprite.w
+  lg.draw(batch, -offset)
 end
 
 

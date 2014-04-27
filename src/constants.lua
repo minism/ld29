@@ -1,4 +1,5 @@
 return {
+  ANIM_SPEED = 1 / 60 * 12,
   BULLET_SPEED = 500,
   FIRING_SPEED = 0.1,
   GRAVITY = 70,
