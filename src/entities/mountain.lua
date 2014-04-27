@@ -33,7 +33,7 @@ end
 
 function Mountain:draw()
   local x, y = self:getPosition()
-  lg.draw(assets.img.mountain, x, y)
+  lg.draw(assets.img.mountain, x, y - 8)
 end
 
 

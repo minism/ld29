@@ -155,7 +155,7 @@ function Boss:init(stage)
                         screen.height / 2 - padding)
   self.tween = nil
   self.firing = 0
-  self.firing_timer = Timer(1 / self.stage)
+  self.firing_timer = Timer(1 / self.stage * 1.5)
   self:act(1)
 end
 

@@ -316,7 +316,7 @@ function Game:handleCollisions()
     elseif entity.mountain then
       if rect.intersects(a,b,c,d, entity:getRect()) then
         if self.timers.lost_fish:check() then
-          local lost = math.min(math.random(75, 200), self.player.bucket_weight)
+          local lost = math.min(math.random(75, 150), self.player.bucket_weight)
           self.ldata.lost_amount = self.ldata.lost_amount + lost
           self.player.bucket_weight = self.player.bucket_weight - lost
           assets.sound.losefish:play()

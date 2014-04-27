@@ -22,11 +22,11 @@ function Spawner:init(world)
     fish = {Timer(2, 4), self.createFish},
     jet = {Timer(4, 8), self.createJet},
     heli = {Timer(5, 10), self.createHeli},
-    mountain = {Timer(10, 20), self.createMountain},
+    mountain = {Timer(12, 24), self.createMountain},
   }
 
   -- Start with timers at max
-  -- for k, v in pairs(self.timers) do v[1]:reset() end
+  for k, v in pairs(self.timers) do v[1]:reset() end
 end
 
 
@@ -70,10 +70,10 @@ end
 
 function Spawner:createFish()
   local x = screen.width - 1
-  local y = util.randrange(screen.height / 2 + 50, screen.height - 80)
+  local y = util.randrange(screen.height / 2 + 50, screen.height - 60)
   local factor = 1 + (self.stage - 1) * 0.25
   local speed = util.randvariance(const.FISH_SPEED_BASE * factor, const.FISH_SPEED_VARIANCE)
-  local spread = math.random(20, 40)
+  local spread = math.random(20, 50)
   return Fish(x, y, speed, spread)
 end
 
@@ -96,7 +96,7 @@ end
 
 function Spawner:createMountain()
   local x = screen.width - 1
-  local y = screen.height - math.random(40, 90)
+  local y = screen.height - math.random(40, 95)
   return Mountain(self.world, x, y)
 end
 
