@@ -60,10 +60,12 @@ function Game:init()
   }
 
   -- Start music
-  -- love.audio.play(assets.music.musdemo)
-  self.sound_heli = assets.sound.heli_raw:play()
-  self.sound_heli:setVolume(0.1)
-  self.sound_heli:setLooping(true)
+  self.music = assets.music.mus1:play()
+  self.music:setLooping(true)
+  self.music:setVolume(0.8)
+  -- self.sound_heli = assets.sound.heli_raw:play()
+  -- self.sound_heli:setVolume(0.1)
+  -- self.sound_heli:setLooping(true)
 
   -- Start game
   console:write('Game initialized')
@@ -98,7 +100,7 @@ end
 
 function Game:collectFish(fish)
   self.ldata.fish = self.ldata.fish + 1
-  local mass = math.random(7, 13)
+  local mass = math.random(10, 20)
   self.player:addBucketWeight(mass)
 
   assets.sound.fish:play()
@@ -245,7 +247,7 @@ function Game:draw()
   screen.apply()
 
   -- Draw background w/ day/night cycle
-  local speed = 50
+  local speed = 40
   local darken = (math.sin((self.ts - math.pi * speed / 2) / speed) + 1) * 100
   local r,g,b = color.darken(self.ldata.sky_color, darken)
   lg.setColor(r,g,b)

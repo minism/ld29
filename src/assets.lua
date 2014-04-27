@@ -12,8 +12,12 @@ function assets.load()
   assets.sound = fs.loadSounds('sfx')
   assets.music = fs.loadSounds('music')
 
+  for k, v in pairs(assets.sound) do
+    v:setVolume(0.5)
+  end
+
   -- Fonts
-  assets.font_large = lg.newFont("font/ObelixProB-cyr.ttf", 36)
+  assets.font_large = lg.newFont("font/ObelixProB-cyr.ttf", 24)
 end
 
 
