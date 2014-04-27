@@ -24,6 +24,7 @@ end
 
 function Fish:draw()
   local x, y = self:getPosition()
+  lg.setColor(255, 255, 255)
   lg.draw(assets.img.shark, self.x, self.y)
 end
 

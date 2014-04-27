@@ -21,7 +21,7 @@ function Spawner:init()
   }
 
   -- Start with timers at max
-  for k, v in pairs(self.timers) do v:reset() end
+  -- for k, v in pairs(self.timers) do v:reset() end
 end
 
 
