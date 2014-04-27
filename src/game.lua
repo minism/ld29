@@ -55,6 +55,9 @@ function Game:init()
 
   -- Start music
   -- love.audio.play(assets.music.musdemo)
+  self.sound_heli = assets.sound.heli_raw:play()
+  self.sound_heli:setVolume(0.3)
+  self.sound_heli:setLooping(true)
 
   -- Start game
   console:write('Game initialized')
@@ -77,7 +80,7 @@ end
 
 function Game:fire()
   local x, y = self.player:getNose()
-  local bullet = vector(x + 1, y + 2)
+  local bullet = vector(x + 1, y + 1)
   bullet.speed = const.BULLET_SPEED
   table.insert(self.ldata.bullets, bullet)
 
@@ -263,8 +266,8 @@ end
 function Game:drawLocalData(dt)
   lg.setColor(255, 255, 255)
   for i, bullet in ipairs(self.ldata.bullets) do
-    lg.setColor(255, 255, 0)
-    lg.rectangle('fill', bullet.x, bullet.y, 1, 1)
+    lg.setColor(255, 255, 255)
+    lg.draw(assets.img.bullet, bullet.x, bullet.y)
   end
 end
 

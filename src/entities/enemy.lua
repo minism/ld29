@@ -5,15 +5,15 @@ local Timer = require 'timer'
 
 
 local Enemy = Entity:extend {
-  w = 32,
-  h = 24,
+  w = 24,
+  h = 16,
 }
 
 
 function Enemy:init(x, y, speed)
   Entity.init(self, x, y)
   self.speed = speed
-  self.health = 5
+  self.health = 3
   self.hit_timer = Timer(0.1)
 
   -- Flags
