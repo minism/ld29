@@ -16,8 +16,9 @@ function Spawner:init()
   self.queue = {}
 
   self.timers = {
-    fish = Timer(1),
-    jet = Timer(3, 8),
+    fish = {Timer(1, 3), self.createFish},
+    jet = {Timer(3, 8), self.createJet},
+    heli = {Timer(1), self.createHeli},
   }
 
   -- Start with timers at max
@@ -29,13 +30,14 @@ function Spawner:update(dt)
   self.ts = self.ts + dt
 
   -- Update timers
-  for k, v in pairs(self.timers) do v:update(dt) end
-
-  if self.timers.fish:check() then
-    table.insert(self.queue, self:createFish())
-  end
-  if self.timers.jet:check() then
-    table.insert(self.queue, self:createJet())
+  for k, v in pairs(self.timers) do 
+    v[1]:update(dt)
+    if v[1]:check() then
+      local e = v[2](self)
+      if e then
+        table.insert(self.queue, e)
+      end
+    end
   end
 end
 
@@ -53,16 +55,23 @@ end
 
 function Spawner:createFish()
   local x = screen.width - Fish.w
-  local y = util.randrange(screen.height / 2, screen.height - 100) -- TODO water pos and constants for this
+  local y = util.randrange(screen.height / 2, screen.height - 100)
   local speed = util.randvariance(const.FISH_SPEED_BASE, const.FISH_SPEED_VARIANCE)
   return Fish(x, y, speed)
 end
 
 function Spawner:createJet()
-  local x = screen.width - Fish.w
-  local y = util.randrange(100, screen.height / 2 - 100) -- TODO water pos and constants for this
+  local x = screen.width - enemy.Jet.w
+  local y = util.randrange(60, screen.height / 2 - 50)
   local speed = util.randvariance(const.JET_SPEED_BASE, const.JET_SPEED_VARIANCE)
-  return enemy.Jet(x, y, speed)
+  -- return enemy.Jet(x, y, speed)
+end
+
+function Spawner:createHeli()
+  local x = screen.width - enemy.Heli.w
+  local y = util.randrange(20, screen.height / 2 - 20) 
+  local speed = 100
+  return enemy.Heli(x, y, speed)
 end
 
 return Spawner

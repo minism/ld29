@@ -1,3 +1,5 @@
+local tween = require 'lib.tween'
+
 local assets = require 'assets'
 local const = require 'constants'
 local Input = require 'input'
@@ -51,6 +53,7 @@ function Game:init()
     water_sprite_batch = lg.newSpriteBatch(assets.img.water),
     bullets = {},
     fish = 0,
+    heli_count = 0,
   }
 
   -- Start music
@@ -70,6 +73,7 @@ function Game:start()
   self.player:reposition(10, 10)
   self.ldata.bullets = {} 
   self.ldata.fish = 0
+  self.ldata.heli_count = 0
   self.entities = {}
   self.spawner = Spawner()
 end
@@ -114,13 +118,21 @@ function Game:update(dt)
   self.ts = self.ts + dt
 
   -- Update systems
+  tween.update(dt)
   self.world:update(dt)
   self.input:update(dt)
   self.spawner:update(dt)
 
   -- Check for new entities to spawn
   for i, entity in ipairs(self.spawner:getEntities()) do
-    table.insert(self.entities, entity)
+    if entity.heli then
+      if self.ldata.heli_count < const.HELI_LIMIT then
+        self.ldata.heli_count = self.ldata.heli_count + 1
+        table.insert(self.entities, entity)
+      end
+    else
+      table.insert(self.entities, entity)
+    end
   end
 
   -- Update entity data
@@ -184,7 +196,9 @@ function Game:handleCollisions()
       for i, bullet in ipairs(self.ldata.bullets) do
         local a,b,c,d = entity:getRect()
         if rect.contains(a,b,c,d, bullet.x, bullet.y) then
-          entity:hit()
+          if entity:hit() and entity.heli then
+            self.ldata.heli_count = self.ldata.heli_count - 1
+          end
           bullet.dead = true
         end
       end

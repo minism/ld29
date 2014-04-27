@@ -17,4 +17,12 @@ function util.randvariance(base, variance)
 end
 
 
+-- Get a random x, y point inside of a rectangle
+function util.randompoint(rect)
+  local x = math.random(rect.left, rect.right)
+  local y = math.random(rect.top, rect.bottom)
+  return x, y
+end
+
+
 return util
