@@ -11,6 +11,9 @@ local Fish = Entity:extend {
 function Fish:init(x, y, speed)
   Entity.init(self, x, y)
   self.speed = speed
+  self.center = y
+  self.spread = math.random(10, 20)
+  self.ts = 0
 
   -- TODO better way than this flag? like a "collide behavior" field
   self.fish = true
@@ -18,7 +21,10 @@ end
 
 
 function Fish:update(dt)
+  self.ts = self.ts + dt
   self.x = self.x - self.speed * dt
+  self.y = self.center + math.sin(self.ts * 1.5) * self.spread
+  console:write(self.y)
 end
 
 
