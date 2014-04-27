@@ -17,7 +17,8 @@ function assets.load()
   end
 
   -- Fonts
-  assets.font_large = lg.newFont("font/ObelixProB-cyr.ttf", 24)
+  assets.font_large = lg.newFont("font/ARMY RUST.ttf", 32)
+  assets.font_huge = lg.newFont("font/ARMY RUST.ttf", 64)
 end
 
 

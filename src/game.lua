@@ -31,7 +31,7 @@ function Game:init()
   -- Setup game timers
   self.timers = {
     firing = Timer(const.FIRING_SPEED),
-    restart = Timer(1),
+    restart = Timer(1.5),
   }
   self.ts = 0
   self.player_death = false
@@ -70,6 +70,7 @@ end
 
 -- Start or restart game
 function Game:start()
+  if self.music then self.music:stop() end
   self.music = assets.music.mus1:play()
   self.music:setLooping(true)
   self.music:setVolume(0.8)
@@ -272,16 +273,25 @@ function Game:draw()
     entity:draw()
   end
 
+  if self.player_death then
+    lg.setColor(0, 0, 0, 128)
+    lg.rectangle('fill', 0, 0, screen.width, screen.height)
+  end
+
   if self.debug then
     self:drawDebug()
   end
   screen.revert()
 
   -- Draw UI
+  if not self.player_death then
+    self:drawInterface()
+  else
+    self:drawDeathScreen()
+  end
   if self.debug then
     console:drawLog()
   end
-  self:drawInterface()
 
 end
 
@@ -340,13 +350,20 @@ function Game:drawDebug()
 end
 
 
--- Draw debugging data
 function Game:drawInterface()
-  lg.setColor(255, 255, 0)
   lg.setFont(assets.font_large)
-  local sx, sy = lg.getWidth(), lg.getHeight()
-  local r = rect(sx - 500, 10, sx, 100)
-  lg.print("Load: " .. self.player.bucket_weight .. " pounds", r.left, r.top)
+  lg.setColor(255, 255, 255)
+  lg.print("Carrying " .. self.player.bucket_weight .. " pounds", 7, 2)
+end
+
+
+function Game:drawDeathScreen()
+  lg.setFont(assets.font_huge)
+  lg.setColor(255, 255, 255)
+  local padding = 150
+  local text = "You died carrying " .. self.player.bucket_weight .. " pounds of shark meat." ..
+               " Press any button to try again, or escape to quit."
+  lg.printf(text, padding, padding, love.graphics.getWidth() - padding * 2, "center")
 end
 
 
@@ -354,13 +371,18 @@ end
 -- Input
 
 function Game:mousepressed(x, y, button)
+  if self.player_death and self.timers.restart:check() then
+    self:start()
+  end
 end
 
 
 function Game:keypressed(key, unicode)
-  -- TODO protect debug keys
   if key == 'escape' then
     love.event.quit()
+  elseif self.player_death and self.timers.restart:check() then
+    self:start()
+  -- TODO protect debug keys
   elseif key == 'f1' then
     self:start()
   elseif key == 'f2' then
