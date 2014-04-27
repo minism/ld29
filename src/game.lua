@@ -61,6 +61,7 @@ function Game:init()
   -- "Local data", simple data owned by game not encapsulated in entities.  This is basically
   -- for simplicity, as using Entity objects may be overengineering for things like water position.
   self.ldata = {
+    max_amount = 0,
     lost_amount = 0,
     water_y = screen.height / 2,
     water_sprite = Sprite(assets.img.water, 16, 16),
@@ -86,6 +87,7 @@ function Game:start()
   self.music:setLooping(true)
   self.music:setVolume(1.0)
   self.player:reposition(10, 10)
+  self.ldata.max_amount = 0
   self.ldata.bullets = {} 
   self.ldata.fish = 0
   self.ldata.lost_amount = 0
@@ -119,7 +121,7 @@ function Game:collectFish(fish)
   self.ldata.fish = self.ldata.fish + 1
   local mass = math.random(15, 22)
   self.player:addBucketWeight(mass)
-
+  self.ldata.max_amount = math.max(self.ldata.max_amount, self.player.bucket_weight)
   assets.sound.fish:play()
 end
 
@@ -465,6 +467,7 @@ function Game:drawDeathScreen()
   lg.setColor(255, 255, 255)
   local padding = 150
   local text = "You died carrying " .. self.player.bucket_weight .. " pounds of shark meat." ..
+               " The most you carried was " .. self.ldata.max_amount .. " pounds." ..
                " Press any button to try again, or escape to quit."
   lg.printf(text, padding, padding, love.graphics.getWidth() - padding * 2, "center")
 end
