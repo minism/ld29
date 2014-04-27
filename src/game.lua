@@ -149,6 +149,11 @@ function Game:update(dt)
       x = x - 5
       table.insert(self.entities, enemy.Rocket(x, y))
     end
+
+    -- Check for OOB entities
+    if not rect.contains(0, 0, screen.width, screen.height, entity.x, entity.y) then
+      entity.dead = true
+    end
   end
 
   self:handleInput()
@@ -336,6 +341,8 @@ function Game:keypressed(key, unicode)
     self:start()
   elseif key == 'f2' then
     self.debug = not self.debug
+  elseif key == 'f3' then
+    console:write(#self.entities)
   end
 end
 

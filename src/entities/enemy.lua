@@ -128,6 +128,7 @@ function Heli:draw(dt)
   lg.setBlendMode('alpha')
 end
 
+
 function Heli:die()
   Enemy.die(self)
 
@@ -139,30 +140,39 @@ end
 
 
 local Rocket = Enemy:extend { 
-  w = 8,
+  w = 12,
   h = 5,
+  health = 2,
 
   -- Rocket basic physics
   vx = 50,
   vy = 20,
-  ax = -300,
+  ax = -350,
   ay = 0,
 }
+
+
+function Rocket:init(...)
+  Enemy.init(self, ...)
+  self.smoke = assets.createSmokeSystem()
+  console:write('rinit')
+end
 
 
 function Rocket:update(dt)
   self.x = self.x + self.vx * dt
   self.y = self.y + self.vy * dt
   self.vx = self.vx + self.ax * dt
+  self.smoke:update(dt)
   -- self.vy = self.vy * 0.99 * dt
+  self.smoke:setPosition(self.x + 14, self.y + self.h / 2)
 end
 
 
 function Rocket:draw()
   lg.draw(assets.img.rocket, self.x, self.y)
+  lg.draw(self.smoke, 0, 0)
 end
-
-
 
 
 return {
