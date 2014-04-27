@@ -20,12 +20,12 @@ function Spawner:init(world)
   self.timers = {
     fish = {Timer(1, 3), self.createFish},
     jet = {Timer(3, 8), self.createJet},
-    -- heli = {Timer(1), self.createHeli},
+    heli = {Timer(5, 10), self.createHeli},
     mountain = {Timer(10, 20), self.createMountain},
   }
 
   -- Start with timers at max
-  -- for k, v in pairs(self.timers) do v:reset() end
+  for k, v in pairs(self.timers) do v[1]:reset() end
 end
 
 

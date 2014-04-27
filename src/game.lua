@@ -79,6 +79,7 @@ function Game:start()
   self.ldata.heli_count = 0
   self.entities = {}
   self.spawner = Spawner(self.world)
+  self.ts = 0
 end
 
 
