@@ -321,6 +321,7 @@ function Game:handleCollisions()
           local lost = math.min(math.random(75, 150), self.player.bucket_weight)
           self.ldata.lost_amount = self.ldata.lost_amount + lost
           self.player.bucket_weight = self.player.bucket_weight - lost
+          self.player.bucket.body:setMass(self.player.bucket_weight)
           assets.sound.losefish:play()
           table.insert(self.entities, FishGeyser(a, b, lost))
         end

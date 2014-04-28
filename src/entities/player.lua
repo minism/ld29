@@ -67,6 +67,7 @@ function Player:reposition(x, y)
   self.bucket.body:setLinearVelocity(0, 0)
   self.body:setPosition(x, y)
   self.bucket.body:setPosition(getBucketPosition(self))
+  self.bucket.body:setMass(const.PLAYER_BUCKET_MASS)
   self.bucket_weight = 0
 end
 
